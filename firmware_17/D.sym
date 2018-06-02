@@ -1,0 +1,66 @@
+cpu 8048
+org 0x0000
+numformat C
+
+skip 0x00FE 0x002
+
+
+code 0x0000 reset
+code 0x0003 INT
+code 0x0007 timer
+
+
+code 0x0102 sub_ctx_in_D_0102
+code 0x0107 sub_ctx_in_D_0107
+code 0x010C sub_ctx_in_D_010C
+code 0x0111 sub_ctx_in_D_0111
+code 0x0116 sub_ctx_in_D_0116
+code 0x010C sub_ctx_in_D_010E
+
+code 0x073D sub_ctx_in_D_073D
+code 0x0748 sub_ctx_in_D_0748
+
+
+code 0x010F sub_ctx_page_B_0111
+
+code 0x0117 sub_ctx_page_B_0119
+
+code 0x011F sub_ctx_page_C_0121
+code 0x0703 sub_ctx_page_A_0705
+
+code 0x0708 sub_ctx_page_C_070A
+code 0x0736 sub_ctx_page_C_0738
+code 0x073F sub_ctx_page_C_0741
+
+
+code 0x05C8 jmp_int ; 
+
+code 0x0065  sub_0065
+code 0x0084  sub_0084
+code 0x00BB  sub_00BB
+code 0x0172  sub_0172
+code 0x0285  sub_0285
+code 0x02DF  sub_02DF
+code 0x02E5  sub_02E5
+code 0x0300  sub_0300
+code 0x031B  sub_031B
+code 0x03C3  sub_03C3
+code 0x03CA  sub_03CA
+code 0x03D2  sub_03D2
+code 0x0400  sub_0400
+code 0x045C  sub_045C
+code 0x045D  sub_045D
+code 0x04BD  sub_04BD
+code 0x04C6  sub_04C6
+code 0x04CF  sub_04CF
+code 0x0509  sub_0509
+code 0x055B  sub_055B
+code 0x05AD  sub_05AD
+code 0x05B8  sub_05B8
+code 0x05BE  sub_05BE
+code 0x06E8  sub_06E8
+code 0x0700  sub_0700
+code 0x0736  sub_0736
+code 0x073F  sub_073F
+code 0x07AC  sub_07AC
+code 0x07E9  sub_07E9

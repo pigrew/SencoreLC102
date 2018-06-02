@@ -1,0 +1,136 @@
+0012 [0xF7] = 0
+0015 [0xFB] = 0
+0016 r0=0x7F
+0040 [0xDF] = 0x1B
+0047 [0xDF] = 0x18
+
+008E Reset port 1 devices?
+0090 Reset port 2 devices?
+0096 [0xDF] = 0x18
+009B [0xBF] = 0x33
+009F [0xFD] = 0xBF (value from previous move)
+00A4 [0xFE] = 0xFF
+
+0174 // 0 -> 0x7D
+0174 // 31 -> 0x9C
+0174 r0=0x1B
+0176 r1=0x40
+0178 a = a & 0001 1111
+017A a = a + 0111 1101
+
+017D 0 0000
+017E 0 0001
+017F 0 0010
+0180 0 0011
+0181 0 0100
+0182 0 0101
+0183 0 0110
+0184 0 0111
+
+0185 0 1000
+0186 0 1001
+0187 0 1010
+0188 0 1011
+0189 0 1100
+018a 0 1101
+018b 0 1110
+018c 0 1111
+
+018d 1 0000
+018e 1 0001
+018f 1 0010
+0190 1 0011
+0191 1 0100
+0192 1 0101
+0193 1 0110
+0194 1 0111
+
+0195 1 1000
+0196 1 1001
+0197 1 1010
+0198 1 1011
+0199 1 1100
+019A 1 1101
+019B 1 1110
+019C 1 1111
+
+0202 p7 = 0xFF
+0203 Read p6
+
+0243 r6 = 0x05 // Loop counter
+0243 a += 0x63
+0247 r7 = a
+0248 a = [a]
+024b r7++
+024c a = r7
+
+0268 // Translate the A register from a number to
+0268 // numeric ASCII.
+0268 // 10 => '-'
+0268 // default: ' '
+0268 if a >= 10:
+026A     jump and return a space character
+026E a = a & 0x0f
+0270 a = a | 0x30
+
+
+0280 // write_gpib(char=A)
+0280 //    Write A to p4, then swapped(A) to p5,
+0280 //    Clear bit 3 of p7
+0280 //    then read p6 until bit 3 is high,
+0280 //    and finally set bit 3 of p7 to finalize 
+0280 write(p4,a)
+0282 write(p5,swapped(a))
+0285 p7 = p7 & 0xFB (1111 1011)
+0286 r2 = 0xFF (loop counter 2)
+0288 a = ~read(p6)
+028A jmp if bit A.3 is 1 (if p6.3 was 0)
+0290 p7 = p7 | 0x04
+0291 return
+
+0300 // Perhaps reset IB?
+0300 //    Perform read on p4,p5,p6
+0300 //    write(p7,0xFF)
+0300 //    loop up to 255 times:
+0300 //        Write 0xFE to p7
+0300 //        Read p6
+0300 //        if (bit p6.0 == 1) goto success;
+0300 //    when(timeout):
+0300 //         write(p7,0xFF)
+0300 //         a = [0x40]
+0300 //         if bit a.7 is 1:
+0300 //             [0x40] = 0x00
+0300 //         if (bit a.7 is 1) OR (a ==0):
+0300 //             JMP sub_ctx_page_D_010C
+0300 //  
+0300 Clear F0
+0301 Read (and discard) p4,p5,p6
+0306 Write 0xFF to p7
+0307 r2 = 0xFF (timeout counter)
+0309 r0 = 0x7F
+030D Write 0xFE to p7
+030E Read p6, and complement
+0310 If p6.0 was 0, then branch
+0312 decrement r2, fail if it is zero
+0316 Write 0xFF to p7
+0319 A = [0x40]
+031A jmp if A.7 is 1
+031C jmp if A=0
+031E default jmp
+
+0369 r2=0xFF (loop counter)
+036B A = ~read(p6)
+036D Branch if bit p6.0 was 0
+036F Timeout loop
+0373 write(p7, 0xFF)
+0374 r = 0x40
+0376 a = [0x40]
+0377 if ([0x40] = 0) return to page D_010C
+
+0778 // Use A as an index into the GPIB command table,
+0778 // and write the four characters
+0779 a *= 4
+077a a += 0x87 // GPIB table offset
+077C r6 = 0x03
+077E r7 = a
+077F gpib_commands[a_ix+i]

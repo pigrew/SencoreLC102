@@ -1,0 +1,45 @@
+cpu 8048
+org 0x0000
+numformat C
+
+code 0x0000 reset
+code 0x0003 INT
+code 0x0007 timer
+code 000F sub_reset
+
+code 0x070A sub_ctx_in_C_070A
+code 0x0711 sub_ctx_in_C_0711
+code 0x0713 sub_ctx_in_C_0713
+code 0x071E sub_ctx_in_C_071E
+code 0x0723 sub_ctx_in_C_0723
+code 0x072A sub_ctx_in_C_072A
+code 0x0738 sub_ctx_in_C_0738
+code 0x0741 sub_ctx_in_C_0741
+
+code 0x0102 sub_ctx_in_C_0102
+code 0x0107 sub_ctx_in_C_0107
+code 0x010C sub_ctx_in_C_010C
+code 0x0121 sub_ctx_in_C_0121
+
+
+code 0x0100 sub_ctx_page_D_0102
+code 0x0105 sub_ctx_page_D_0107
+code 0x010A sub_ctx_page_D_010C
+code 0x010F sub_ctx_page_D_0111
+code 0x0114 sub_ctx_page_D_0116
+code 0x0718 sub_ctx_page_A_071A
+code 0x071C sub_ctx_page_A_071E
+code 0x073B sub_ctx_page_D_073D
+code 0x0746 sub_ctx_page_D_0748
+
+
+;  grep call B.lsta | grep -v sub_ | cut -c 36- | sort | uniq | sed -e 's/^\(.*\)$/code 0x\0  sub_\0/'
+
+code 0x00BE  sub_00BE
+code 0x0093  sub_0093
+code 0x03F3  sub_03F3
+code 0x0172  sub_0172
+code 0x018D  sub_018D
+code 0x03EA  sub_03EA
+code 0x0500  sub_0500
+code 0x051B  sub_051B

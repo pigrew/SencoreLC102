@@ -1,0 +1,255 @@
+cpu 8048
+org 0x0000
+numformat C
+
+; Program segment is 4096 words
+; It has two banks
+; Each page is 256 words, therefore 16 pages (8 per bank)
+ 
+; Variables
+; 0x40 IB status flags
+ 
+ 
+; GPIB related things in this segment
+
+code 0x0000 reset
+code 0x0003 INT
+code 0x0007 timer
+
+skip 0x0005 0x0002
+skip 0x0009 0x0006
+skip 0x00F9 0x0007
+skip 0x01ED 0x0013
+skip 0x02F1 0x000F
+skip 0x03DE 0x0022
+skip 0x05F5 0x000B
+skip 0x06F7 0x8
+skip 0x07F7 0x8
+skip 0x08B0 0x50
+skip 0x09f5 0x0b
+skip 0x0A90 0x70
+skip 0x0b64 0x9c
+skip 0x0ca1 0x5f
+skip 0x0FAB 0x55
+skip 0x0df4 0x0c
+skip 0x0e8e 0x72
+
+string 0x0787 gpib_commands 0x70
+string 0x0263 gpib_error_str 0x05
+
+string 0x051A FormatMilli 0x04
+string 0x051E FormatUnit1 0x04
+string 0x0522 FormatMicro1 0x04
+string 0x0526 FormatPico 0x04
+string 0x052A FormatMicro2 0x04
+string 0x052E FormatBlank1 0x04
+string 0x0532 FormatUnit2 0x04
+string 0x0536 FormatUnit3 0x04
+string 0x53A FormatBlank3 0x04
+string 0x53E FormatBlank4 0x04
+
+string 0x0555 Format2Micro 0x0008
+string 0x055D Format2G 0x0008
+string 0x0565 Format2Kilo 0x0008
+string 0x056D Format2Mega 0x0008
+string 0x0575 Format2Milli 0x0008
+string 0x057D Format2Unit1 0x0008
+string 0x0585 Format2B 0x0008
+string 0x058D Format2Unit2 0x0008
+string 0x0595 Format2UnitG 0x0008
+string 0x059D Format2Blank1 0x0008
+string 0x05A5 Format2UnitB1 0x0008
+string 0x05AD Format2MicroG 0x0008
+string 0x05B5 Format2MicroB 0x0008
+string 0x05BD Format2MilliB1 0x0008
+string 0x05C5 Format2UnitG 0x0008
+string 0x05CD Format2UnitB2 0x0008
+string 0x05D5 Format2MilliB2 0x0008
+string 0x05DD Format2Blank2 0x0008
+string 0x05E5 Format2Blank3 0x0008
+string 0x05ED Format2Blank4 0x0008
+
+code 0x000F jmp_int ; 
+
+
+code 0x0111 sub_ctx_in_B_0111
+code 0x0119 sub_ctx_in_B_0119
+
+
+;  grep call B.lsta | grep -v sub_ | cut -c 36- | sort | uniq | sed -e 's/^\(.*\)$/code 0x\0  sub_\0/'
+code 0x003A  sub_003A
+code 0x004B  sub_004B
+code 0x007B  sub_007B
+code 0x008E  sub_reset
+
+
+code 0x0194 unknown_5
+code 0x0198 unknown_6
+code 0x019C unknown_7
+code 0x019D unknown_8
+code 0x01A4 unknown_9
+code 0x01A8 unknown_10
+code 0x01AC unknown_11
+code 0x01B0 unknown_12
+code 0x01CE unknown_16
+code 0x01D6 unknown_17
+code 0x044E unknown_19
+code 0x045E unknown_20
+code 0x0463 unknown_21
+code 0x046C unknown_22
+code 0x046E unknown_23
+code 0x047C unknown_24
+code 0x04B1 unknown_25
+code 0x066D unknown_26
+code 0x067F unknown_27
+code 0x0686 unknown_28
+code 0x0697 unknown_29
+code 0x6FF unknown_30
+code 0x737 unknown_31
+code 0x7FF unknown_32
+code 0x0824 unknown_33
+code 0x084E unknown_34
+code 0x0851 unknown_35
+code 0x085E unknown_36
+code 0x0860 unknown_37
+code 0x0875 unknown_38
+code 0x087B unknown_39
+code 0x088E unknown_40
+
+code 0x089F unknown_41
+code 0x0F00 unknown_42
+code 0x0F5C unknown_44
+;code 0x0f61 unknown_45
+code 0x0f73 unknown_47
+code 0x0f78 unknown_48
+code 0x0f7D unknown_49
+code 0x0f82 unknown_50
+code 0x0f96 unknown_51
+code 0x0900 unknown_52
+code 0x091f unknown_53
+code 0x0953 unknown_54
+code 0x0988 unknown_55
+code 0x0997 unknown_56
+code 0x09a2 unknown_57
+code 0x09aa unknown_58
+code 0x09c1 unknown_59
+code 0x09cc unknown_60
+code 0x09d4 unknown_61
+code 0x0b00 unknown_62
+code 0x0b15 unknown_63
+code 0x0b22 unknown_64
+code 0x0b2f unknown_65
+code 0x0b3c unknown_66
+code 0x0b49 unknown_67
+code 0x0b50 unknown_68
+code 0x0b57 unknown_69
+code 0x0b5b unknown_70
+code 0x0c00 unknown_80
+code 0x0c0b unknown_81
+code 0x0c68 unknown_82
+code 0x0c78 unknown_83
+code 0x0c83 unknown_84
+code 0x0d00 unknown_85
+code 0x0d6a unknown_86
+code 0x0dd1 unknown_87
+code 0x0e00 unknown_88
+code 0x0e59 unknown_89
+code 0x0e78 unknown_90
+
+code 0x0f64 unknown_92
+code 0x0a00 unknown_93
+code 0x0a0a unknown_94
+code 0x0A0F unknown_95
+code 0x0A1b unknown_96
+code 0x0A26 unknown_97
+code 0x0a36 unknown_98
+code 0x0a38 unknown_99
+code 0x0a3e unknown_100
+code 0x0a48 unknown_101
+code 0x0a4c unknown_102
+code 0x0a56 unknown_103
+code 0x0a5c unknown_104
+code 0x0a65 unknown_105
+code 0x0a7f unknown_106
+code 0x0a89 unknown_107
+code 0x0a8d unknown_108
+code 0x0909 unknown_109
+code 0x090d unknown_110
+code 0x091a unknown_111
+
+
+
+code 0x0174 jmp_0174_callback_table
+; xdasm can't handle local 8-bit addresses
+byte 0x017d localJumpTable 32
+
+
+code 0x0103 jt_0103
+code 0x0104 jt_0104
+code 0x0124 jt_0124
+code 0x0133 jt_0133
+code 0x0140 jt_0140
+code 0x0148 jt_0148
+code 0x0153 jt_0153
+code 0x015B jt_015B
+code 0x0164 jt_0164
+code 0x016D jt_016D
+code 0x0194 jt_0194
+code 0x0198 jt_0198
+code 0x019C jt_019C
+code 0x01A0 jt_01A0
+code 0x01A4 jt_01A4
+code 0x01A8 jt_01A8
+code 0x01AC jt_01AC
+code 0x01B0 jt_01B0
+code 0x01B4 jt_01B4
+code 0x01B6 jt_01B6
+code 0x01BA jt_01BA
+code 0x01BE jt_01BE
+code 0x01C2 jt_01C2
+code 0x01CE jt_01CE
+code 0x01D6 jt_01D6
+code 0x01C8 jt_01C8
+
+
+code 0x0200  sub_0200
+code 0x0242  s0200_end
+
+code 0x0243 j0243
+code 0x0248 j0243_loop
+
+code 0x0268  sub_A_digit_to_ascii
+code 0x027B  sub_writeGPIB_2E_period
+code 0x0273 s0268_getspace
+code 0x0278 s0268_getminus
+
+code 0x0280  sub_write_GPIB_a
+code 0x0288  sGPIBw_loop
+code 0x028E  sGPIBw_done
+code 0x02BA  sub_02BA
+code 0x02D8  sub_02D8
+
+code 0x0300 jmp_0300_IB_stuff
+code 0x030E j300_timeout_loop
+code 0x0324 j300_contitnue
+
+code 0x0357  sub_0357
+
+code 0x0369  sub_0369
+code 0x036B s0369_loop1
+code 0x037D s0369_success
+
+code 0x038F  sub_038F
+code 0x03BB  sub_03BB
+code 0x0490  sub_0490
+code 0x0497  sub_0497
+code 0x04A0  sub_04A0
+code 0x0500  sub_0500
+code 0x0600  sub_0600
+code 0x069C  sub_069C
+code 0x06B7  sub_06B7
+code 0x070A  sub_070A
+code 0x0726  sub_0726
+code 0x0752  sub_0752
+
+code 0x003C jmp_reset_continue1

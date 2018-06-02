@@ -1,0 +1,92 @@
+cpu 8048
+org 0x0000
+numformat C
+; Zeros in the input
+;skip 0x0000 0x4000
+
+; Port 1:
+; P10 -> EPROM A12
+; P11 -> EPROM A13
+; P12 -> Leakage supply on/off
+; P13 -> Input from IC27A comparator (Or pull-down???) Something to do with capacitance range switching?
+; P14 -> Gate of TR40; pulls down IC27B comparator (-) input
+; P15 -> Controls discharge relay? Leakage something? (or maybe feedback to see if the relay failed?)
+; P16 -> Also something to do with the discharge stuff
+; P17 -> L4 discharge relay?
+
+; P20 -> I/O expander + ROM A8
+; P21 -> I/O expander + ROM A9
+; P22 -> I/O expander + ROM A10
+; P23 -> I/O expander + ROM A11
+; P24 -> Auto-off pin (connector P6)
+; P25 -> Output of IC27A (capacitance comparator circuit)
+; P26 -> Output of IC27B (capacitance comparator circuit)
+; P27 -> active high failure warning
+
+; EPROM has four used segments:
+;       A12 -> P10 (port 1, bit 0)
+;       A13 -> P11 (port 1, bit 1)
+;       A14 -> HIGH
+
+skip 0x0009 7
+skip 0x04E5 0x1B
+
+code 0x0000 reset
+code 0x0003 INT
+code 0x0007 timer
+
+code 0X0010 jmp_reset
+
+code 0x071A sub_ctx_in_A_0705
+code 0x071A sub_ctx_in_A_071A
+code 0x071E sub_ctx_in_A_071E
+
+; EPROM page context switches
+code 0x0708 sub_ctx_page_C_070A
+code 0x0711 sub_ctx_page_C_0713
+code 0x071C sub_ctx_page_C_071E
+code 0x0721 sub_ctx_page_C_0723
+code 0x0728 sub_ctx_page_C_072A
+
+;code 0x07ea
+;code 0x07f5
+;code 0x07fe
+;code 0x0851
+;code 0x08CC
+;code 0x08F5
+;code 0x092B
+;code 0x095E
+;code 0x096F
+code 0x0038  sub_0038
+code 0x0049  sub_0049
+code 0x005B  sub_005B
+code 0x009C  sub_009C
+code 0x00E4  sub_00E4
+code 0x0100  sub_0100
+code 0x016F  sub_016F
+code 0x0186  sub_0186
+code 0x0200  sub_0200
+code 0x021B  sub_021B
+code 0x0239  sub_0239
+code 0x0271  sub_0271
+code 0x02CC  sub_02CC
+code 0x02EC  sub_02EC
+code 0x0400  sub_0400
+code 0x0449  sub_0449
+code 0x04AA  sub_04AA
+code 0x04C5  sub_04C5
+code 0x04D3  sub_04D3
+code 0x0500  sub_0500
+code 0x0504  sub_0504
+code 0x050D  sub_050D
+code 0x055C  sub_055C
+code 0x0560  sub_0560
+code 0x0569  sub_0569
+code 0x056D  sub_056D
+code 0x05AC  sub_05AC
+code 0x05BD  sub_05BD
+code 0x05E6  sub_05E6
+code 0x05E9  sub_05E9
+code 0x06CB  sub_06CB
+code 0x06CF  sub_06CF
+code 0x07B9  sub_07B9
