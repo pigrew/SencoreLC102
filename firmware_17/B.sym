@@ -9,7 +9,25 @@ numformat C
 ; Variables
 ; 0x40 IB status flags
  
- 
+; Expander mapping:
+; MCU   IB
+; p4   <-> D3..D0
+; p5   <-> D7..D0
+
+; p6.0 <-- Active low single from IB?
+; p6.3 <-- InterruptRequest; op complete?
+
+; p7.0 --> 
+; p7.1 -->
+; p7.2 -->
+; p7.3 --> \write_en
+; 
+; Other pins?
+; RS2..RS0 Register select
+; \RD
+; \reset
+
+
 ; GPIB related things in this segment
 
 code 0x0000 reset
@@ -22,6 +40,7 @@ skip 0x00F9 0x0007
 skip 0x01ED 0x0013
 skip 0x02F1 0x000F
 skip 0x03DE 0x0022
+skip 0x04FC 0x0003
 skip 0x05F5 0x000B
 skip 0x06F7 0x8
 skip 0x07F7 0x8
@@ -34,7 +53,39 @@ skip 0x0FAB 0x55
 skip 0x0df4 0x0c
 skip 0x0e8e 0x72
 
-string 0x0787 gpib_commands 0x70
+string 0x0787 gpib_command_CPO 0x4 ; 00
+string 0x078B gpib_command_OPZ 0x4
+string 0x078F gpib_command_SHZ 0x4
+string 0x0793 gpib_command_BAT 0x4
+
+string 0x0797 gpib_command_CAP 0x4 ; 04
+string 0x079B gpib_command_LKI 0x4
+string 0x079F gpib_command_D2A 0x4
+string 0x07A3 gpib_command_ESR 0x4
+
+string 0x07A7 gpib_command_IND 0x4 ; 08
+string 0x07AB gpib_command_RIN 0x4
+string 0x07AF gpib_command_CLR 0x4
+string 0x07B3 gpib_command_LKR 0x4
+
+string 0x07B7 gpib_command_ALM 0x4 ; 0C
+string 0x07BB gpib_command_DBL 0x4
+string 0x07BF gpib_command_TAN 0x4
+string 0x07C3 gpib_command_CER 0x4
+
+string 0x07C7 gpib_command_COL 0x4 ; 10
+string 0x07CB gpib_command_YFB 0x4
+string 0x07CF gpib_command_SWX 0x4
+string 0x07D3 gpib_command_AOC 0x4
+
+string 0x07D7 gpib_command_SPR 0x4 ; 14
+string 0x07DB gpib_command_CPO 0x4
+string 0x07DF gpib_command_NFC 0x4
+string 0x07E3 gpib_command_SHT 0x4 ; 17
+
+string 0x07E7 gpib_command_OPN 0x4 ; 18
+string 0x07EB gpib_command_WAI 0x4
+
 string 0x0263 gpib_error_str 0x05
 
 string 0x051A FormatMilli 0x04
@@ -48,21 +99,21 @@ string 0x0536 FormatUnit3 0x04
 string 0x53A FormatBlank3 0x04
 string 0x53E FormatBlank4 0x04
 
-string 0x0555 Format2Micro 0x0008
-string 0x055D Format2G 0x0008
-string 0x0565 Format2Kilo 0x0008
-string 0x056D Format2Mega 0x0008
-string 0x0575 Format2Milli 0x0008
-string 0x057D Format2Unit1 0x0008
-string 0x0585 Format2B 0x0008
-string 0x058D Format2Unit2 0x0008
-string 0x0595 Format2UnitG 0x0008
-string 0x059D Format2Blank1 0x0008
-string 0x05A5 Format2UnitB1 0x0008
-string 0x05AD Format2MicroG 0x0008
-string 0x05B5 Format2MicroB 0x0008
-string 0x05BD Format2MilliB1 0x0008
-string 0x05C5 Format2UnitG 0x0008
+string 0x0555 Format2Micro 0x0008		;   0 0000
+string 0x055D Format2G 0x0008			;   0 0001
+string 0x0565 Format2Kilo 0x0008		;   0 0010
+string 0x056D Format2Mega 0x0008		;   0 0011
+string 0x0575 Format2Milli 0x0008		;   0 0100
+string 0x057D Format2Unit1 0x0008		;   0 0101
+string 0x0585 Format2B 0x0008			;   0 0110
+string 0x058D Format2Unit2 0x0008		;   0 0111
+string 0x0595 Format2UnitG 0x0008		;   0 1000
+string 0x059D Format2Blank1 0x0008		;   0 1001
+string 0x05A5 Format2UnitB1 0x0008		;   0 1010
+string 0x05AD Format2MicroG 0x0008		;   0 1011
+string 0x05B5 Format2MicroB 0x0008		;   0 1100
+string 0x05BD Format2MilliB1 0x0008		;   0 1101
+string 0x05C5 Format2UnitG 0x0008		;   0 1110
 string 0x05CD Format2UnitB2 0x0008
 string 0x05D5 Format2MilliB2 0x0008
 string 0x05DD Format2Blank2 0x0008
@@ -99,7 +150,6 @@ code 0x0463 unknown_21
 code 0x046C unknown_22
 code 0x046E unknown_23
 code 0x047C unknown_24
-code 0x04B1 unknown_25
 code 0x066D unknown_26
 code 0x067F unknown_27
 code 0x0686 unknown_28
@@ -212,6 +262,11 @@ code 0x01D6 jt_01D6
 code 0x01C8 jt_01C8
 
 
+byte 0x04dc localJumpTable2 12
+code 0x04D9 jt2_04D9
+code 0x04B1 jt2_04B1
+byte 0x04e8 localJumpTable2_badData 24
+
 code 0x0200  sub_0200
 code 0x0242  s0200_end
 
@@ -244,12 +299,15 @@ code 0x03BB  sub_03BB
 code 0x0490  sub_0490
 code 0x0497  sub_0497
 code 0x04A0  sub_04A0
+
 code 0x0500  sub_0500
+code 0x0546 jmp_0546_WriteIB_Format2String
+
 code 0x0600  sub_0600
 code 0x069C  sub_069C
 code 0x06B7  sub_06B7
 code 0x070A  sub_070A
 code 0x0726  sub_0726
-code 0x0752  sub_0752
-
+code 0x0752  sub_write_mode_to_GPIB
+code 0x0778  sWriteMode_doWrite
 code 0x003C jmp_reset_continue1

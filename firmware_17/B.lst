@@ -10,7 +10,7 @@
 							;	Checksum:	E344
 							;	CRC-32:		3C9710B4
 							;
-							;	Date:		Sat Jun 02 16:08:00 2018
+							;	Date:		Sat Jun 02 19:21:32 2018
 							;
 							;	CPU:		Intel 8048 (MCS-48 family)
 							;
@@ -458,7 +458,7 @@
 0202 : 3F			    "?"		[2]		movd	p7,a
 0203 : 0E			    " "		[2]		movd	a,p6
 0204 : 52 42			    "RB"	[2]		jb2	s0200_end
-0206 : F4 52			    " R"	[2]		call	sub_0752
+0206 : F4 52			    " R"	[2]		call	sub_write_mode_to_GPIB
 0208 : FD			    " "		[1]		mov	a,r5
 0209 : D3 11			    "  "	[2]		xrl	a,#0x11
 020B : C6 43			    " C"	[2]		jz	j0243
@@ -986,14 +986,14 @@
 04AE : 03 DC			    "  "	[2]		add	a,#0xDC
 04B0 : B3			    " "		[2]		jmpp	@a						;INFO: indirect jump
 							;
-04B1							unknown_25:
+04B1							jt2_04B1:
 04B1 : B8 21			    " !"	[2]		mov	r0,#0x21
 04B3 : F0			    " "		[1]		mov	a,@r0
-04B4 : 96 D9			    "  "	[2]		jnz	L04D9
+04B4 : 96 D9			    "  "	[2]		jnz	jt2_04D9
 04B6 : C8			    " "		[1]		dec	r0
 04B7 : F0			    " "		[1]		mov	a,@r0
 04B8 : 53 F0			    "S "	[2]		anl	a,#0xF0
-04BA : 96 D9			    "  "	[2]		jnz	L04D9
+04BA : 96 D9			    "  "	[2]		jnz	jt2_04D9
 04BC : B9 36			    " 6"	[2]		mov	r1,#0x36
 04BE : F1			    " "		[1]		mov	a,@r1
 04BF : F2 C3			    "  "	[2]		jb7	L04C3
@@ -1016,21 +1016,54 @@
 04D5 : 53 F0			    "S "	[2]		anl	a,#0xF0
 04D7 : 6A			    "j"		[1]		add	a,r2
 04D8 : A0			    " "		[1]		mov	@r0,a
-04D9							L04D9:
+04D9							jt2_04D9:
 04D9 : 54 00			    "T "	[2]		call	sub_0200
 04DB : 83			    " "		[2]		ret
 							;
-04DC : D9 D9 D9 D9 B1 B1 D9 B1	    "        "			db	0xD9, 0xD9, 0xD9, 0xD9, 0xB1, 0xB1, 0xD9, 0xB1
-04E4 : B1 D9 D9 B1 3C 3D 3E 3F	    "    <=>?"			db	0xB1, 0xD9, 0xD9, 0xB1, 0x3C, 0x3D, 0x3E, 0x3F
-04EC : 40 41 42 43 44 45 46 47	    "@ABCDEFG"			db	0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47
-04F4 : 48 49 4A 4B 4C 4D 4E 4F	    "HIJKLMNO"			db	0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F
-04FC : 50 51 52 53		    "PQRS"			db	0x50, 0x51, 0x52, 0x53
+04DC							localJumpTable2:
+04DC : D9			    " "				db	0xD9
+04DD : D9			    " "				db	0xD9
+04DE : D9			    " "				db	0xD9
+04DF : D9			    " "				db	0xD9
+04E0 : B1			    " "				db	0xB1
+04E1 : B1			    " "				db	0xB1
+04E2 : D9			    " "				db	0xD9
+04E3 : B1			    " "				db	0xB1
+04E4 : B1			    " "				db	0xB1
+04E5 : D9			    " "				db	0xD9
+04E6 : D9			    " "				db	0xD9
+04E7 : B1			    " "				db	0xB1
+04E8							localJumpTable2_badData:
+04E8 : 3C			    "<"				db	0x3C
+04E9 : 3D			    "="				db	0x3D
+04EA : 3E			    ">"				db	0x3E
+04EB : 3F			    "?"				db	0x3F
+04EC : 40			    "@"				db	0x40
+04ED : 41			    "A"				db	0x41
+04EE : 42			    "B"				db	0x42
+04EF : 43			    "C"				db	0x43
+04F0 : 44			    "D"				db	0x44
+04F1 : 45			    "E"				db	0x45
+04F2 : 46			    "F"				db	0x46
+04F3 : 47			    "G"				db	0x47
+04F4 : 48			    "H"				db	0x48
+04F5 : 49			    "I"				db	0x49
+04F6 : 4A			    "J"				db	0x4A
+04F7 : 4B			    "K"				db	0x4B
+04F8 : 4C			    "L"				db	0x4C
+04F9 : 4D			    "M"				db	0x4D
+04FA : 4E			    "N"				db	0x4E
+04FB : 4F			    "O"				db	0x4F
+04FC : 50			    "P"				db	0x50
+04FD : 51			    "Q"				db	0x51
+04FE : 52			    "R"				db	0x52
+04FF : 53			    "S"				db	0x53
 							;
 0500							sub_0500:
 0500 : FC			    " "		[1]		mov	a,r4
 0501 : D3 09			    "  "	[2]		xrl	a,#0x09
 0503 : BE 05			    "  "	[2]		mov	r6,#0x05
-0505 : C6 46			    " F"	[2]		jz	L0546
+0505 : C6 46			    " F"	[2]		jz	jmp_0546_WriteIB_Format2String
 0507 : BE 04			    "  "	[2]		mov	r6,#0x04
 0509							L0509:
 0509 : FC			    " "		[1]		mov	a,r4
@@ -1045,7 +1078,7 @@
 0513 : FF			    " "		[1]		mov	a,r7
 0514 : EE 0F			    "  "	[2]		djnz	r6,L050F
 0516 : BE 01			    "  "	[2]		mov	r6,#0x01
-0518 : A4 46			    " F"	[2]		jmp	L0546
+0518 : A4 46			    " F"	[2]		jmp	jmp_0546_WriteIB_Format2String
 							;
 051A							FormatMilli:
 051A : 45 2D 30 33		    "E-03"			db	"E-03"
@@ -1070,7 +1103,7 @@
 053E : 20 20 20 20		    "    "			db	"    "
 0542 : 20 20 20 20		    "    "			db	0x20, 0x20, 0x20, 0x20
 							;
-0546							L0546:
+0546							jmp_0546_WriteIB_Format2String:
 0546 : FD			    " "		[1]		mov	a,r5
 0547 : E7			    " "		[1]		rl	a
 0548 : E7			    " "		[1]		rl	a
@@ -1431,26 +1464,26 @@
 0750 : A0			    " "		[1]		mov	@r0,a
 0751 : 83			    " "		[2]		ret
 							;
-0752							sub_0752:
+0752							sub_write_mode_to_GPIB:
 0752 : FC			    " "		[1]		mov	a,r4
 0753 : D3 0A			    "  "	[2]		xrl	a,#0x0A
 0755 : 96 5B			    " ["	[2]		jnz	L075B
 0757 : 23 17			    "# "	[2]		mov	a,#0x17
-0759 : E4 78			    " x"	[2]		jmp	L0778
+0759 : E4 78			    " x"	[2]		jmp	sWriteMode_doWrite
 							;
 075B							L075B:
 075B : FD			    " "		[1]		mov	a,r5
 075C : D3 12			    "  "	[2]		xrl	a,#0x12
 075E : 96 64			    " d"	[2]		jnz	L0764
 0760 : 23 18			    "# "	[2]		mov	a,#0x18
-0762 : E4 78			    " x"	[2]		jmp	L0778
+0762 : E4 78			    " x"	[2]		jmp	sWriteMode_doWrite
 							;
 0764							L0764:
 0764 : FD			    " "		[1]		mov	a,r5
 0765 : D3 13			    "  "	[2]		xrl	a,#0x13
 0767 : 96 6D			    " m"	[2]		jnz	L076D
 0769 : 23 19			    "# "	[2]		mov	a,#0x19
-076B : E4 78			    " x"	[2]		jmp	L0778
+076B : E4 78			    " x"	[2]		jmp	sWriteMode_doWrite
 							;
 076D							L076D:
 076D : FD			    " "		[1]		mov	a,r5
@@ -1462,7 +1495,7 @@
 0773 : B8 40			    " @"	[2]		mov	r0,#0x40
 0775 : F0			    " "		[1]		mov	a,@r0
 0776 : F2 EF			    "  "	[2]		jb7	L07EF
-0778							L0778:
+0778							sWriteMode_doWrite:
 0778 : E7			    " "		[1]		rl	a
 0779 : E7			    " "		[1]		rl	a
 077A : 03 87			    "  "	[2]		add	a,#0x87
@@ -1476,21 +1509,65 @@
 0784 : EE 7F			    "  "	[2]		djnz	r6,L077F
 0786 : 83			    " "		[2]		ret
 							;
-0787							gpib_commands:
-0787 : 43 50 4F 20 4F 50 5A 20	    "CPO OPZ "			db	"CPO OPZ SHZ BAT CAP LKI D/A ESR IND RIN CLR LKR ALM DBL TAN CER COL YFB SWX AOC SPR CPO NFC SHT OPN WAI S\x0F\xB0\x00\xE4xLM"
-       53 48 5A 20 42 41 54 20	    "SHZ BAT "
-       43 41 50 20 4C 4B 49 20	    "CAP LKI "
-       44 2F 41 20 45 53 52 20	    "D/A ESR "
-       49 4E 44 20 52 49 4E 20	    "IND RIN "
-       43 4C 52 20 4C 4B 52 20	    "CLR LKR "
-       41 4C 4D 20 44 42 4C 20	    "ALM DBL "
-       54 41 4E 20 43 45 52 20	    "TAN CER "
-       43 4F 4C 20 59 46 42 20	    "COL YFB "
-       53 57 58 20 41 4F 43 20	    "SWX AOC "
-       53 50 52 20 43 50 4F 20	    "SPR CPO "
-       4E 46 43 20 53 48 54 20	    "NFC SHT "
-       4F 50 4E 20 57 41 49 20	    "OPN WAI "
-       53 0F B0 00 E4 78 4C 4D	    "S    xLM"
+0787							gpib_command_CPO:
+0787 : 43 50 4F 20		    "CPO "			db	"CPO "
+078B							gpib_command_OPZ:
+078B : 4F 50 5A 20		    "OPZ "			db	"OPZ "
+078F							gpib_command_SHZ:
+078F : 53 48 5A 20		    "SHZ "			db	"SHZ "
+0793							gpib_command_BAT:
+0793 : 42 41 54 20		    "BAT "			db	"BAT "
+0797							gpib_command_CAP:
+0797 : 43 41 50 20		    "CAP "			db	"CAP "
+079B							gpib_command_LKI:
+079B : 4C 4B 49 20		    "LKI "			db	"LKI "
+079F							gpib_command_D2A:
+079F : 44 2F 41 20		    "D/A "			db	"D/A "
+07A3							gpib_command_ESR:
+07A3 : 45 53 52 20		    "ESR "			db	"ESR "
+07A7							gpib_command_IND:
+07A7 : 49 4E 44 20		    "IND "			db	"IND "
+07AB							gpib_command_RIN:
+07AB : 52 49 4E 20		    "RIN "			db	"RIN "
+07AF							gpib_command_CLR:
+07AF : 43 4C 52 20		    "CLR "			db	"CLR "
+07B3							gpib_command_LKR:
+07B3 : 4C 4B 52 20		    "LKR "			db	"LKR "
+07B7							gpib_command_ALM:
+07B7 : 41 4C 4D 20		    "ALM "			db	"ALM "
+07BB							gpib_command_DBL:
+07BB : 44 42 4C 20		    "DBL "			db	"DBL "
+07BF							gpib_command_TAN:
+07BF : 54 41 4E 20		    "TAN "			db	"TAN "
+07C3							gpib_command_CER:
+07C3 : 43 45 52 20		    "CER "			db	"CER "
+07C7							gpib_command_COL:
+07C7 : 43 4F 4C 20		    "COL "			db	"COL "
+07CB							gpib_command_YFB:
+07CB : 59 46 42 20		    "YFB "			db	"YFB "
+07CF							gpib_command_SWX:
+07CF : 53 57 58 20		    "SWX "			db	"SWX "
+07D3							gpib_command_AOC:
+07D3 : 41 4F 43 20		    "AOC "			db	"AOC "
+07D7							gpib_command_SPR:
+07D7 : 53 50 52 20		    "SPR "			db	"SPR "
+07DB							gpib_command_CPO:
+07DB : 43 50 4F 20		    "CPO "			db	"CPO "
+07DF							gpib_command_NFC:
+07DF : 4E 46 43 20		    "NFC "			db	"NFC "
+07E3							gpib_command_SHT:
+07E3 : 53 48 54 20		    "SHT "			db	"SHT "
+07E7							gpib_command_OPN:
+07E7 : 4F 50 4E 20		    "OPN "			db	"OPN "
+07EB							gpib_command_WAI:
+07EB : 57 41 49 20		    "WAI "			db	"WAI "
+							;
+07EF							L07EF:
+07EF : 53 0F			    "S "	[2]		anl	a,#0x0F
+07F1 : B0 00			    "  "	[2]		mov	@r0,#0x00
+07F3 : E4 78			    " x"	[2]		jmp	sWriteMode_doWrite
+							;
+07F5 : 4C 4D			    "LM"			db	0x4C, 0x4D
 							;
 							;
 								org	0x07FF
@@ -2823,10 +2900,12 @@ Value		Type	Name
 04A2		Code	L04A2
 04A4		Code	L04A4
 04A9		Code	L04A9
-04B1		Code	unknown_25
+04B1		Code	jt2_04B1
 04C3		Code	L04C3
 04D3		Code	L04D3
-04D9		Code	L04D9
+04D9		Code	jt2_04D9
+04DC		Data	localJumpTable2
+04E8		Data	localJumpTable2_badData
 0500		Code	sub_0500
 0509		Code	L0509
 050F		Code	L050F
@@ -2842,7 +2921,7 @@ Value		Type	Name
 053A		Data	FormatBlank3
 053C		Code	L053C
 053E		Data	FormatBlank4
-0546		Code	L0546
+0546		Code	jmp_0546_WriteIB_Format2String
 054D		Code	L054D
 0555		Data	Format2Micro
 055D		Data	Format2G
@@ -2917,16 +2996,41 @@ Value		Type	Name
 0737		Code	unknown_31
 0738		Code	L0738
 073E		Code	L073E
-0752		Code	sub_0752
+0752		Code	sub_write_mode_to_GPIB
 075B		Code	L075B
 0764		Code	L0764
 076D		Code	L076D
 0773		Code	L0773
-0778		Code	L0778
+0778		Code	sWriteMode_doWrite
 077F		Code	L077F
-0787		Data	gpib_commands
+0787		Data	gpib_command_CPO
+078B		Data	gpib_command_OPZ
+078F		Data	gpib_command_SHZ
+0793		Data	gpib_command_BAT
+0797		Data	gpib_command_CAP
 0798		Code	L0798
+079B		Data	gpib_command_LKI
+079F		Data	gpib_command_D2A
+07A3		Data	gpib_command_ESR
+07A7		Data	gpib_command_IND
+07AB		Data	gpib_command_RIN
+07AF		Data	gpib_command_CLR
+07B3		Data	gpib_command_LKR
+07B7		Data	gpib_command_ALM
+07BB		Data	gpib_command_DBL
+07BF		Data	gpib_command_TAN
+07C3		Data	gpib_command_CER
+07C7		Data	gpib_command_COL
+07CB		Data	gpib_command_YFB
+07CF		Data	gpib_command_SWX
+07D3		Data	gpib_command_AOC
+07D7		Data	gpib_command_SPR
+07DB		Data	gpib_command_CPO
+07DF		Data	gpib_command_NFC
+07E3		Data	gpib_command_SHT
+07E7		Data	gpib_command_OPN
 07EA		Code	L07EA
+07EB		Data	gpib_command_WAI
 07EF		Code	L07EF
 07FF		Code	unknown_32
 080B		Code	L080B
@@ -3075,6 +3179,6 @@ Value		Type	Name
 0FEC		Code	L0FEC
 0FF9		Code	L0FF9
 
-Number of symbols:			417
+Number of symbols:			444
 
 ;--------------------------------------------------------------

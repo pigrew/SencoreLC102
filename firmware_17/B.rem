@@ -54,7 +54,7 @@
 019B 1 1110
 019C 1 1111
 
-0202 p7 = 0xFF
+0202 p7 = 0xFF // Clear GPIB controller flags
 0203 Read p6
 
 0243 r6 = 0x05 // Loop counter
@@ -75,7 +75,7 @@
 
 
 0280 // write_gpib(char=A)
-0280 //    Write A to p4, then swapped(A) to p5,
+0280 //    Write A.3..0 to p4, then swapped(A.3..0) to p5,
 0280 //    Clear bit 3 of p7
 0280 //    then read p6 until bit 3 is high,
 0280 //    and finally set bit 3 of p7 to finalize 
@@ -90,11 +90,11 @@
 
 0300 // Perhaps reset IB?
 0300 //    Perform read on p4,p5,p6
-0300 //    write(p7,0xFF)
+0300 //    write(p7,0xFF) // sets p7 to be a read port
 0300 //    loop up to 255 times:
-0300 //        Write 0xFE to p7
+0300 //        Write 1110 to p7
 0300 //        Read p6
-0300 //        if (bit p6.0 == 1) goto success;
+0300 //        if (bit p6.0 == 0) goto success;
 0300 //    when(timeout):
 0300 //         write(p7,0xFF)
 0300 //         a = [0x40]
@@ -126,6 +126,29 @@
 0374 r = 0x40
 0376 a = [0x40]
 0377 if ([0x40] = 0) return to page D_010C
+037D A = IB_Data[7..0]
+0382 r7 = A
+0385 // Clear bit p7.1
+0386 // Wait until p6.0 is low
+038c set p7.1 high
+038d // return read data in A.
+
+04a9  a = [0x40]
+04ac a = a & 0x1F // Seems like a bug? Limit should be 12?
+04ae a = a + 0xDC // 0xDC to 0xFB
+
+0500 a = r4
+0501 a = a ^ 0x09  (0000.1001)
+0503 r6 = 0x05
+
+0546 // Input from r5, 0x55+(r5 <<< 2)
+
+0752 Check if r4 == 0x0A => 'SHT"
+075B Check if r5 == 0x12 => 'OPN'
+0764 Check if r5 == 0x13 => 'WAI'
+076D Check if r5 == 0x11 => return (do nothing)
+0773 Read [0x40], if bit 7 is set, jump to 0x07EF
+
 
 0778 // Use A as an index into the GPIB command table,
 0778 // and write the four characters
