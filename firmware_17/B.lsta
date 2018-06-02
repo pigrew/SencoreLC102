@@ -10,7 +10,7 @@
 							;	Checksum:	E344
 							;	CRC-32:		3C9710B4
 							;
-							;	Date:		Sat Jun 02 19:21:32 2018
+							;	Date:		Sat Jun 02 19:30:25 2018
 							;
 							;	CPU:		Intel 8048 (MCS-48 family)
 							;
@@ -1527,14 +1527,14 @@
 																	; // and write the four characters
 0779 : E7			    " "		[1]		rl	a						; a *= 4
 077A : 03 87			    "  "	[2]		add	a,#0x87			; a += 0x87 // GPIB table offset
-077C : BE 03			    "  "	[2]		mov	r6,#0x03			; r6 = 0x03
+077C : BE 03			    "  "	[2]		mov	r6,#0x03			; r6 = 0x03 // (loop counter)
 077E : AF			    " "		[1]		mov	r7,a					; r7 = a
-077F							L077F:
+077F							sWriteMode_end:
 077F : A3			    " "		[2]		movp	a,@a				; gpib_commands[a_ix+i]
 0780 : 54 80			    "T "	[2]		call	sub_write_GPIB_a
 0782 : 1F			    " "		[1]		inc	r7
 0783 : FF			    " "		[1]		mov	a,r7
-0784 : EE 7F			    "  "	[2]		djnz	r6,L077F
+0784 : EE 7F			    "  "	[2]		djnz	r6,sWriteMode_end
 0786 : 83			    " "		[2]		ret
 							;
 0787							gpib_command_CPO:
@@ -3030,7 +3030,7 @@ Value		Type	Name
 076D		Code	L076D
 0773		Code	L0773
 0778		Code	sWriteMode_doWrite
-077F		Code	L077F
+077F		Code	sWriteMode_end
 0787		Data	gpib_command_CPO
 078B		Data	gpib_command_OPZ
 078F		Data	gpib_command_SHZ

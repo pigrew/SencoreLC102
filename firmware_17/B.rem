@@ -154,6 +154,6 @@
 0778 // and write the four characters
 0779 a *= 4
 077a a += 0x87 // GPIB table offset
-077C r6 = 0x03
+077C r6 = 0x03 // (loop counter)
 077E r7 = a
 077F gpib_commands[a_ix+i]

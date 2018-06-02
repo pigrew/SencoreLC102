@@ -267,6 +267,9 @@ code 0x04D9 jt2_04D9
 code 0x04B1 jt2_04B1
 byte 0x04e8 localJumpTable2_badData 24
 
+
+code 0x003C jmp_reset_continue1
+
 code 0x0200  sub_0200
 code 0x0242  s0200_end
 
@@ -310,4 +313,4 @@ code 0x070A  sub_070A
 code 0x0726  sub_0726
 code 0x0752  sub_write_mode_to_GPIB
 code 0x0778  sWriteMode_doWrite
-code 0x003C jmp_reset_continue1
+code 0x077F  sWriteMode_end
