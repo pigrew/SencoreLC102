@@ -53,9 +53,24 @@
 019A 1 1101
 019B 1 1110
 019C 1 1111
-
+0200 // write(r3 = ???, r4={0A: short},
+0200 //     r5={11: idle: 12: open, 13: wait}
+0200 // Perhaps using r4 is a bug?
+0200 //
 0202 p7 = 0xFF // Clear GPIB controller flags
 0203 Read p6
+0204 Cancel if p6.2 is high
+0208 a = r5
+0209 a = a ^ 0x11 (0001 0001)
+
+020B // Go to end if idle
+020D r7 = a // bug? r7 goes unused
+020E r6 = 0x03
+0210 r0 = 0x22
+0213 r7 = r3
+0214 // if (r3 == 0x07)
+0214 //     r7 = 0x06;
+
 
 0243 r6 = 0x05 // Loop counter
 0243 a += 0x63
@@ -143,6 +158,9 @@
 
 0546 // Input from r5, 0x55+(r5 <<< 2)
 
+0752 // write(r4={0A: short},
+0752 //     r5={11: idle: 12: open, 13: wait}
+0752 //
 0752 Check if r4 == 0x0A => 'SHT"
 075B Check if r5 == 0x12 => 'OPN'
 0764 Check if r5 == 0x13 => 'WAI'
@@ -157,3 +175,13 @@
 077C r6 = 0x03 // (loop counter)
 077E r7 = a
 077F gpib_commands[a_ix+i]
+07EF // Write the low nibble of 0x40 over GPIB, and
+07EF // set [0x40] to zero
+07EF // a is the status byte [0x40]
+07F3 // call above and write the operation of the lowest
+07F3 // nibble of [0x40]
+
+0900 // f(a)
+
+0a00 // f(a)
+0A12 // Doesn't seem like part of the table?

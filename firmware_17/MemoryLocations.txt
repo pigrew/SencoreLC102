@@ -4,10 +4,30 @@
 #31 
 #3D
 #3E
-#40 GPIB Status
+#40 GPIB Status; [7..4: ???; 3..0: mode]
 #50
 #70
 #7F
 #BF
 #FB
 #F7
+
+
+modes (for 0x40 GPIB status):
+00: CPO
+01: OPZ
+02: SHZ
+03: BAT
+04: CAP
+05: LKI
+06: D/A
+07: ESR
+08: IND
+09: RIN
+0A: CLR
+0B: LKR
+0C: ALM
+0D: DBL
+0E: TAN
+0F: CER
+

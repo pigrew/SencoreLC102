@@ -15,6 +15,7 @@ numformat C
 ; p5   <-> D7..D0
 
 ; p6.0 <-- Active low single from IB?
+; p6.2 <-- (used on line 0203
 ; p6.3 <-- InterruptRequest; op complete?
 
 ; p7.0 --> 
@@ -43,7 +44,7 @@ skip 0x03DE 0x0022
 skip 0x04FC 0x0003
 skip 0x05F5 0x000B
 skip 0x06F7 0x8
-skip 0x07F7 0x8
+skip 0x07F5 0x0b
 skip 0x08B0 0x50
 skip 0x09f5 0x0b
 skip 0x0A90 0x70
@@ -138,12 +139,6 @@ code 0x0194 unknown_5
 code 0x0198 unknown_6
 code 0x019C unknown_7
 code 0x019D unknown_8
-code 0x01A4 unknown_9
-code 0x01A8 unknown_10
-code 0x01AC unknown_11
-code 0x01B0 unknown_12
-code 0x01CE unknown_16
-code 0x01D6 unknown_17
 code 0x044E unknown_19
 code 0x045E unknown_20
 code 0x0463 unknown_21
@@ -156,7 +151,7 @@ code 0x0686 unknown_28
 code 0x0697 unknown_29
 code 0x6FF unknown_30
 code 0x737 unknown_31
-code 0x7FF unknown_32
+code 0x800 unknown_32
 code 0x0824 unknown_33
 code 0x084E unknown_34
 code 0x0851 unknown_35
@@ -175,17 +170,7 @@ code 0x0f78 unknown_48
 code 0x0f7D unknown_49
 code 0x0f82 unknown_50
 code 0x0f96 unknown_51
-code 0x0900 unknown_52
-code 0x091f unknown_53
-code 0x0953 unknown_54
 code 0x0988 unknown_55
-code 0x0997 unknown_56
-code 0x09a2 unknown_57
-code 0x09aa unknown_58
-code 0x09c1 unknown_59
-code 0x09cc unknown_60
-code 0x09d4 unknown_61
-code 0x0b00 unknown_62
 code 0x0b15 unknown_63
 code 0x0b22 unknown_64
 code 0x0b2f unknown_65
@@ -207,26 +192,15 @@ code 0x0e59 unknown_89
 code 0x0e78 unknown_90
 
 code 0x0f64 unknown_92
-code 0x0a00 unknown_93
 code 0x0a0a unknown_94
 code 0x0A0F unknown_95
-code 0x0A1b unknown_96
-code 0x0A26 unknown_97
 code 0x0a36 unknown_98
 code 0x0a38 unknown_99
-code 0x0a3e unknown_100
-code 0x0a48 unknown_101
-code 0x0a4c unknown_102
-code 0x0a56 unknown_103
-code 0x0a5c unknown_104
 code 0x0a65 unknown_105
 code 0x0a7f unknown_106
-code 0x0a89 unknown_107
 code 0x0a8d unknown_108
 code 0x0909 unknown_109
 code 0x090d unknown_110
-code 0x091a unknown_111
-
 
 
 code 0x0174 jmp_0174_callback_table
@@ -270,8 +244,9 @@ byte 0x04e8 localJumpTable2_badData 24
 
 code 0x003C jmp_reset_continue1
 
-code 0x0200  sub_0200
-code 0x0242  s0200_end
+code 0x0200  sub_write_result_to_GPIB
+code 0x0243  sWriteResult_write_a_Byte
+code 0x0242  sWriteResult_end
 
 code 0x0243 j0243
 code 0x0248 j0243_loop
@@ -313,4 +288,45 @@ code 0x070A  sub_070A
 code 0x0726  sub_0726
 code 0x0752  sub_write_mode_to_GPIB
 code 0x0778  sWriteMode_doWrite
-code 0x077F  sWriteMode_end
+code 0x077F  sWriteMode_writeLoop
+code 0x07EF  sWriteMode_status7
+
+code 0x0900 sub_0900
+byte 0x0907 localJumpTable9 8
+code 0x09AA jt9_AA
+code 0x09A2 jt9_A2
+code 0x0997 jt9_97
+code 0x09d4 jt9_D4
+code 0x09cc jt9_CC
+code 0x09C1 jt9_C1
+code 0x0910 jt9_10
+code 0x091A jt9_1A
+code 0x0953 jt9_53
+
+
+code 0x0a00 sub_0a00
+byte 0x0a0a localJumpTableA 7
+
+code 0x0A76 jtA_76
+code 0x0A30 jtA_30
+code 0x0A26 jtA_26
+code 0x0A2C jtA_2C
+code 0x0A22 jtA_22
+code 0x0A3E jtA_3E
+code 0x0A7B jtA_7B
+;code 0x0ABF jtA_BF
+;code 0x0A03 jtA_03 ; weird one, doesn't seem valid?
+; Part 2 (some repeats, not listed)
+byte 0x0A1B localJumpTableA2 7
+code 0x0A56 jtA_56
+code 0x0A50 jtA_50
+code 0x0A4C jtA_4C
+code 0x0A48 jtA_48
+code 0x0A5C jtA_5C
+byte 0x0A89 localJumpTableA32 7
+
+code 0x0a13
+code 0x0a17
+
+code 0x0B00 unknown_0B00
+

@@ -10,7 +10,7 @@
 							;	Checksum:	E344
 							;	CRC-32:		3C9710B4
 							;
-							;	Date:		Sat Jun 02 19:30:25 2018
+							;	Date:		Sat Jun 02 23:31:36 2018
 							;
 							;	CPU:		Intel 8048 (MCS-48 family)
 							;
@@ -381,22 +381,18 @@
 01A0 : B0 06			    "  "	[2]		mov	@r0,#0x06
 01A2 : 24 B6			    "$ "	[2]		jmp	jt_01B6
 							;
-01A4							unknown_9:
 01A4							jt_01A4:
 01A4 : B0 02			    "  "	[2]		mov	@r0,#0x02
 01A6 : 24 B6			    "$ "	[2]		jmp	jt_01B6
 							;
-01A8							unknown_10:
 01A8							jt_01A8:
 01A8 : B0 01			    "  "	[2]		mov	@r0,#0x01
 01AA : 24 B6			    "$ "	[2]		jmp	jt_01B6
 							;
-01AC							unknown_11:
 01AC							jt_01AC:
 01AC : B0 00			    "  "	[2]		mov	@r0,#0x00
 01AE : 24 B6			    "$ "	[2]		jmp	jt_01B6
 							;
-01B0							unknown_12:
 01B0							jt_01B0:
 01B0 : B0 07			    "  "	[2]		mov	@r0,#0x07
 01B2							L01B2:
@@ -426,14 +422,12 @@
 01CA : B0 01			    "  "	[2]		mov	@r0,#0x01
 01CC : 24 4E			    "$N"	[2]		jmp	L014E
 							;
-01CE							unknown_16:
 01CE							jt_01CE:
 01CE : B8 40			    " @"	[2]		mov	r0,#0x40
 01D0 : B0 00			    "  "	[2]		mov	@r0,#0x00
 01D2 : 74 8F			    "t "	[2]		call	sub_038F
 01D4 : 24 0A			    "$ "	[2]		jmp	L010A
 							;
-01D6							unknown_17:
 01D6							jt_01D6:
 01D6 : 74 8F			    "t "	[2]		call	sub_038F
 01D8 : B8 20			    "  "	[2]		mov	r0,#0x20
@@ -449,27 +443,35 @@
 01E5 : BD 09			    "  "	[2]		mov	r5,#0x09
 01E7 : 85			    " "		[1]		clr	f0
 01E8 : A5			    " "		[1]		clr	f1
-01E9 : 54 00			    "T "	[2]		call	sub_0200
+							;
+01E9 : 54			    "T"				db	0x54
+							;
+01EA							L01EA:
+01EA : 00			    " "		[1]		nop
 01EB : 24 05			    "$ "	[2]		jmp	L0105
 							;
 							;
 								org	0x0200
 							;
-0200							sub_0200:
-0200 : 23 FF			    "# "	[2]		mov	a,#0xFF
+0200							sub_write_result_to_GPIB:
+0200 : 23 FF			    "# "	[2]		mov	a,#0xFF			; // write(r3 = ???, r4={0A: short},
+																	; //     r5={11: idle: 12: open, 13: wait}
+																	; // Perhaps using r4 is a bug?
+																	; //
 0202 : 3F			    "?"		[2]		movd	p7,a				; p7 = 0xFF // Clear GPIB controller flags
 0203 : 0E			    " "		[2]		movd	a,p6				; Read p6
-0204 : 52 42			    "RB"	[2]		jb2	s0200_end
+0204 : 52 42			    "RB"	[2]		jb2	sWriteResult_end	; Cancel if p6.2 is high
 0206 : F4 52			    " R"	[2]		call	sub_write_mode_to_GPIB
-0208 : FD			    " "		[1]		mov	a,r5
-0209 : D3 11			    "  "	[2]		xrl	a,#0x11
-020B : C6 43			    " C"	[2]		jz	j0243
-020D : AF			    " "		[1]		mov	r7,a
-020E : BE 03			    "  "	[2]		mov	r6,#0x03
-0210 : B8 22			    " ""	[2]		mov	r0,#0x22
+0208 : FD			    " "		[1]		mov	a,r5					; a = r5
+0209 : D3 11			    "  "	[2]		xrl	a,#0x11			; a = a ^ 0x11 (0001 0001)
+020B : C6 43			    " C"	[2]		jz	sWriteResult_write_a_Byte	; // Go to end if idle
+020D : AF			    " "		[1]		mov	r7,a					; r7 = a // bug? r7 goes unused
+020E : BE 03			    "  "	[2]		mov	r6,#0x03			; r6 = 0x03
+0210 : B8 22			    " ""	[2]		mov	r0,#0x22			; r0 = 0x22
 0212 : FB			    " "		[1]		mov	a,r3
-0213 : AF			    " "		[1]		mov	r7,a
-0214 : D3 07			    "  "	[2]		xrl	a,#0x07
+0213 : AF			    " "		[1]		mov	r7,a					; r7 = r3
+0214 : D3 07			    "  "	[2]		xrl	a,#0x07			; // if (r3 == 0x07)
+																	; //     r7 = 0x06;
 0216 : 96 1A			    "  "	[2]		jnz	L021A
 0218 : BF 06			    "  "	[2]		mov	r7,#0x06
 021A							L021A:
@@ -502,9 +504,10 @@
 023E							L023E:
 023E : 23 0A			    "# "	[2]		mov	a,#0x0A
 0240 : 54 80			    "T "	[2]		call	sub_write_GPIB_a
-0242							s0200_end:
+0242							sWriteResult_end:
 0242 : 83			    " "		[2]		ret
 							;
+0243							sWriteResult_write_a_Byte:
 0243							j0243:
 0243 : BE 05			    "  "	[2]		mov	r6,#0x05			; r6 = 0x05 // Loop counter
 																	; a += 0x63
@@ -602,7 +605,7 @@
 02AA : BD 11			    "  "	[2]		mov	r5,#0x11
 02AC : 85			    " "		[1]		clr	f0
 02AD : A5			    " "		[1]		clr	f1
-02AE : 54 00			    "T "	[2]		call	sub_0200
+02AE : 54 00			    "T "	[2]		call	sub_write_result_to_GPIB
 02B0 : D4 00			    "  "	[2]		call	sub_0600
 02B2 : 94 97			    "  "	[2]		call	sub_0497
 02B4 : 94 97			    "  "	[2]		call	sub_0497
@@ -1044,7 +1047,7 @@
 04D7 : 6A			    "j"		[1]		add	a,r2
 04D8 : A0			    " "		[1]		mov	@r0,a
 04D9							jt2_04D9:
-04D9 : 54 00			    "T "	[2]		call	sub_0200
+04D9 : 54 00			    "T "	[2]		call	sub_write_result_to_GPIB
 04DB : 83			    " "		[2]		ret
 							;
 04DC							localJumpTable2:
@@ -1369,7 +1372,6 @@
 							;
 06CA							L06CA:
 06CA : F2 D6			    "  "	[2]		jb7	L06D6
-06CC							L06CC:
 06CC : B2 D2			    "  "	[2]		jb5	L06D2
 06CE : BE 10			    "  "	[2]		mov	r6,#0x10
 06D0 : C4 E2			    "  "	[2]		jmp	L06E2
@@ -1492,7 +1494,10 @@
 0751 : 83			    " "		[2]		ret
 							;
 0752							sub_write_mode_to_GPIB:
-0752 : FC			    " "		[1]		mov	a,r4					; Check if r4 == 0x0A => 'SHT"
+0752 : FC			    " "		[1]		mov	a,r4					; // write(r4={0A: short},
+																	; //     r5={11: idle: 12: open, 13: wait}
+																	; //
+																	; Check if r4 == 0x0A => 'SHT"
 0753 : D3 0A			    "  "	[2]		xrl	a,#0x0A
 0755 : 96 5B			    " ["	[2]		jnz	L075B
 0757 : 23 17			    "# "	[2]		mov	a,#0x17
@@ -1521,7 +1526,7 @@
 0773							L0773:
 0773 : B8 40			    " @"	[2]		mov	r0,#0x40			; Read [0x40], if bit 7 is set, jump to 0x07EF
 0775 : F0			    " "		[1]		mov	a,@r0
-0776 : F2 EF			    "  "	[2]		jb7	L07EF
+0776 : F2 EF			    "  "	[2]		jb7	sWriteMode_status7
 0778							sWriteMode_doWrite:
 0778 : E7			    " "		[1]		rl	a						; // Use A as an index into the GPIB command table,
 																	; // and write the four characters
@@ -1529,12 +1534,12 @@
 077A : 03 87			    "  "	[2]		add	a,#0x87			; a += 0x87 // GPIB table offset
 077C : BE 03			    "  "	[2]		mov	r6,#0x03			; r6 = 0x03 // (loop counter)
 077E : AF			    " "		[1]		mov	r7,a					; r7 = a
-077F							sWriteMode_end:
+077F							sWriteMode_writeLoop:
 077F : A3			    " "		[2]		movp	a,@a				; gpib_commands[a_ix+i]
 0780 : 54 80			    "T "	[2]		call	sub_write_GPIB_a
 0782 : 1F			    " "		[1]		inc	r7
 0783 : FF			    " "		[1]		mov	a,r7
-0784 : EE 7F			    "  "	[2]		djnz	r6,sWriteMode_end
+0784 : EE 7F			    "  "	[2]		djnz	r6,sWriteMode_writeLoop
 0786 : 83			    " "		[2]		ret
 							;
 0787							gpib_command_CPO:
@@ -1590,19 +1595,19 @@
 07EB							gpib_command_WAI:
 07EB : 57 41 49 20		    "WAI "			db	"WAI "
 							;
-07EF							L07EF:
-07EF : 53 0F			    "S "	[2]		anl	a,#0x0F
+07EF							sWriteMode_status7:
+07EF : 53 0F			    "S "	[2]		anl	a,#0x0F			; // Write the low nibble of 0x40 over GPIB, and
+																	; // set [0x40] to zero
+																	; // a is the status byte [0x40]
 07F1 : B0 00			    "  "	[2]		mov	@r0,#0x00
-07F3 : E4 78			    " x"	[2]		jmp	sWriteMode_doWrite
+07F3 : E4 78			    " x"	[2]		jmp	sWriteMode_doWrite	; // call above and write the operation of the lowest
+																	; // nibble of [0x40]
 							;
-07F5 : 4C 4D			    "LM"			db	0x4C, 0x4D
 							;
+								org	0x0800
 							;
-								org	0x07FF
-							;
-07FF							unknown_32:
-07FF : 56 B9			    "V "	[2]		jt1	L08B9
-0801 : 40			    "@"		[1]		orl	a,@r0
+0800							unknown_32:
+0800 : B9 40			    " @"	[2]		mov	r1,#0x40
 0802 : B1 16			    "  "	[2]		mov	@r1,#0x16
 0804 : B9 7F			    "  "	[2]		mov	r1,#0x7F
 0806 : BF 06			    "  "	[2]		mov	r7,#0x06
@@ -1754,36 +1759,35 @@
 							;
 								org	0x0900
 							;
-0900							unknown_52:
-0900 : BD 09			    "  "	[2]		mov	r5,#0x09
+0900							sub_0900:
+0900 : BD 09			    "  "	[2]		mov	r5,#0x09			; // f(a)
 0902 : B8 32			    " 2"	[2]		mov	r0,#0x32
 0904 : 03 07			    "  "	[2]		add	a,#0x07
 0906 : B3			    " "		[2]		jmpp	@a						;INFO: indirect jump
 							;
-0907 : AA A2			    "  "			db	0xAA, 0xA2
-							;
-0909							unknown_109:
-0909 : 97			    " "		[1]		clr	c
-090A : D4 CC			    "  "	[2]		call	L06CC
-							;
+0907							localJumpTable9:
+0907 : AA			    " "				db	0xAA
+0908 : A2			    " "				db	0xA2
+0909 : 97			    " "				db	0x97
+090A : D4			    " "				db	0xD4
+090B : CC			    " "				db	0xCC
 090C : C1			    " "				db	0xC1
+090D : 10			    " "				db	0x10
+090E : 1A			    " "				db	0x1A
+090F : 53			    "S"				db	0x53
 							;
-090D							unknown_110:
-090D : 10			    " "		[1]		inc	@r0
-090E : 1A			    " "		[1]		inc	r2
-090F : 53 B4			    "S "	[2]		anl	a,#0xB4
-0911 : 09			    " "		[2]		in	a,p1
+0910							jt9_10:
+0910 : B4 09			    "  "	[2]		call	L0509
 0912 : F5			    " "		[1]		sel	mb1
 0913 : BC 01			    "  "	[2]		mov	r4,#0x01
 0915 : BD 09			    "  "	[2]		mov	r5,#0x09
 0917 : 85			    " "		[1]		clr	f0
 0918 : 24 EA			    "$ "	[2]		jmp	L01EA
 							;
-091A							unknown_111:
+091A							jt9_1A:
 091A : B8 35			    " 5"	[2]		mov	r0,#0x35
 091C : F0			    " "		[1]		mov	a,@r0
 091D : D3 06			    "  "	[2]		xrl	a,#0x06
-091F							unknown_53:
 091F : 96 F0			    "  "	[2]		jnz	L09F0
 0921 : C8			    " "		[1]		dec	r0
 0922 : F0			    " "		[1]		mov	a,@r0
@@ -1825,7 +1829,7 @@
 0950 : A1			    " "		[1]		mov	@r1,a
 0951 : 24 6B			    "$k"	[2]		jmp	L016B
 							;
-0953							unknown_54:
+0953							jt9_53:
 0953 : B8 35			    " 5"	[2]		mov	r0,#0x35
 0955 : F0			    " "		[1]		mov	a,@r0
 0956 : D3 06			    "  "	[2]		xrl	a,#0x06
@@ -1875,7 +1879,7 @@
 0995 : 85			    " "		[1]		clr	f0
 0996 : 83			    " "		[2]		ret
 							;
-0997							unknown_56:
+0997							jt9_97:
 0997 : 34 88			    "4 "	[2]		call	L0188
 0999 : 54 7F			    "T "	[2]		call	L027F
 099B : F5			    " "		[1]		sel	mb1
@@ -1883,13 +1887,13 @@
 099E : 23 06			    "# "	[2]		mov	a,#0x06
 09A0 : 24 B2			    "$ "	[2]		jmp	L01B2
 							;
-09A2							unknown_57:
+09A2							jt9_A2:
 09A2 : 34 88			    "4 "	[2]		call	L0188
 09A4 : BC 00			    "  "	[2]		mov	r4,#0x00
 09A6 : 23 03			    "# "	[2]		mov	a,#0x03
 09A8 : 24 B2			    "$ "	[2]		jmp	L01B2
 							;
-09AA							unknown_58:
+09AA							jt9_AA:
 09AA : 34 88			    "4 "	[2]		call	L0188
 09AC : 54 11			    "T "	[2]		call	L0211
 09AE : F5			    " "		[1]		sel	mb1
@@ -1907,21 +1911,21 @@
 09BD : EF B9			    "  "	[2]		djnz	r7,L09B9
 09BF : 24 EA			    "$ "	[2]		jmp	L01EA
 							;
-09C1							unknown_59:
+09C1							jt9_C1:
 09C1 : 34 88			    "4 "	[2]		call	L0188
-09C3 : 54 00			    "T "	[2]		call	sub_0200
+09C3 : 54 00			    "T "	[2]		call	sub_write_result_to_GPIB
 09C5 : F5			    " "		[1]		sel	mb1
 09C6 : BC 03			    "  "	[2]		mov	r4,#0x03
 09C8 : 23 0C			    "# "	[2]		mov	a,#0x0C
 09CA : 24 DD			    "$ "	[2]		jmp	L01DD
 							;
-09CC							unknown_60:
+09CC							jt9_CC:
 09CC : 34 88			    "4 "	[2]		call	L0188
 09CE : BC 04			    "  "	[2]		mov	r4,#0x04
 09D0 : 23 06			    "# "	[2]		mov	a,#0x06
 09D2 : 24 DD			    "$ "	[2]		jmp	L01DD
 							;
-09D4							unknown_61:
+09D4							jt9_D4:
 09D4 : 34 88			    "4 "	[2]		call	L0188
 09D6 : 54 11			    "T "	[2]		call	L0211
 09D8 : F5			    " "		[1]		sel	mb1
@@ -1950,8 +1954,8 @@
 							;
 								org	0x0A00
 							;
-0A00							unknown_93:
-0A00 : B9 32			    " 2"	[2]		mov	r1,#0x32
+0A00							sub_0a00:
+0A00 : B9 32			    " 2"	[2]		mov	r1,#0x32			; // f(a)
 0A02 : BF 03			    "  "	[2]		mov	r7,#0x03
 0A04 : B8 35			    " 5"	[2]		mov	r0,#0x35
 0A06 : F0			    " "		[1]		mov	a,@r0
@@ -1959,45 +1963,52 @@
 0A09 : B3			    " "		[2]		jmpp	@a						;INFO: indirect jump
 							;
 0A0A							unknown_94:
-0A0A : 76 30			    "v0"	[2]		jf1	L0A30
-0A0C : 26 2C			    "&,"	[2]		jnt0	L0A2C
-							;
+0A0A							localJumpTableA:
+0A0A : 76			    "v"				db	0x76
+0A0B : 30			    "0"				db	0x30
+0A0C : 26			    "&"				db	0x26
+0A0D : 2C			    ","				db	0x2C
 0A0E : 22			    """				db	0x22
+0A0F : 3E			    ">"				db	0x3E
+0A10 : 7B			    "{"				db	0x7B
+0A11 : BF 03			    "  "			db	0xBF, 0x03
 							;
-0A0F							unknown_95:
-0A0F : 3E			    ">"		[2]		movd	p6,a
-0A10 : 7B			    "{"		[1]		addc	a,r3
-0A11 : BF 03			    "  "	[2]		mov	r7,#0x03
+0A13							L0A13:
+																	;// Doesn't seem like part of the table?
 0A13 : B9 32			    " 2"	[2]		mov	r1,#0x32
 0A15 : B8 35			    " 5"	[2]		mov	r0,#0x35
+0A17							L0A17:
 0A17 : F0			    " "		[1]		mov	a,@r0
 0A18 : 03 1B			    "  "	[2]		add	a,#0x1B
 0A1A : B3			    " "		[2]		jmpp	@a						;INFO: indirect jump
 							;
-0A1B							unknown_96:
-0A1B : 7B			    "{"		[1]		addc	a,r3
-0A1C : 7B			    "{"		[1]		addc	a,r3
-0A1D : 56 50			    "VP"	[2]		jt1	L0A50
-0A1F : 4C			    "L"		[1]		orl	a,r4
-0A20 : 48			    "H"		[1]		orl	a,r0
-0A21 : 5C			    "\"		[1]		anl	a,r4
+0A1B							localJumpTableA2:
+0A1B : 7B			    "{"				db	0x7B
+0A1C : 7B			    "{"				db	0x7B
+0A1D : 56			    "V"				db	0x56
+0A1E : 50			    "P"				db	0x50
+0A1F : 4C			    "L"				db	0x4C
+0A20 : 48			    "H"				db	0x48
+0A21 : 5C			    "\"				db	0x5C
+							;
+0A22							jtA_22:
 0A22 : 19			    " "		[1]		inc	r1
 0A23 : CF			    " "		[1]		dec	r7
 0A24 : 44 36			    "D6"	[2]		jmp	L0236
 							;
-0A26							unknown_97:
+0A26							jtA_26:
 0A26 : 19			    " "		[1]		inc	r1
 0A27 : 19			    " "		[1]		inc	r1
 0A28 : CF			    " "		[1]		dec	r7
 0A29 : CF			    " "		[1]		dec	r7
 0A2A : 44 36			    "D6"	[2]		jmp	L0236
 							;
-0A2C							L0A2C:
+0A2C							jtA_2C:
 0A2C : 19			    " "		[1]		inc	r1
 0A2D : CF			    " "		[1]		dec	r7
 0A2E : 44 3E			    "D>"	[2]		jmp	L023E
 							;
-0A30							L0A30:
+0A30							jtA_30:
 0A30 : 19			    " "		[1]		inc	r1
 0A31 : 19			    " "		[1]		inc	r1
 0A32 : CF			    " "		[1]		dec	r7
@@ -2015,65 +2026,65 @@
 0A3A : EF 36			    " 6"	[2]		djnz	r7,unknown_98
 0A3C : 44 76			    "Dv"	[2]		jmp	L0276
 							;
-0A3E							unknown_100:
+0A3E							jtA_3E:
 0A3E : F1			    " "		[1]		mov	a,@r1
 0A3F : 53 F0			    "S "	[2]		anl	a,#0xF0
-0A41 : 96 7B			    " {"	[2]		jnz	L0A7B
+0A41 : 96 7B			    " {"	[2]		jnz	jtA_7B
 0A43 : 19			    " "		[1]		inc	r1
 0A44 : EF 36			    " 6"	[2]		djnz	r7,unknown_98
 0A46 : 44 76			    "Dv"	[2]		jmp	L0276
 							;
-0A48							unknown_101:
+0A48							jtA_48:
 0A48 : 19			    " "		[1]		inc	r1
 0A49 : CF			    " "		[1]		dec	r7
 0A4A : 44 65			    "De"	[2]		jmp	L0265
 							;
-0A4C							unknown_102:
+0A4C							jtA_4C:
 0A4C : 19			    " "		[1]		inc	r1
 0A4D : CF			    " "		[1]		dec	r7
 0A4E : 44 5C			    "D\"	[2]		jmp	L025C
 							;
-0A50							L0A50:
+0A50							jtA_50:
 0A50 : 19			    " "		[1]		inc	r1
 0A51 : 19			    " "		[1]		inc	r1
 0A52 : CF			    " "		[1]		dec	r7
 0A53 : CF			    " "		[1]		dec	r7
 0A54 : 44 65			    "De"	[2]		jmp	L0265
 							;
-0A56							unknown_103:
+0A56							jtA_56:
 0A56 : 19			    " "		[1]		inc	r1
 0A57 : 19			    " "		[1]		inc	r1
 0A58 : CF			    " "		[1]		dec	r7
 0A59 : CF			    " "		[1]		dec	r7
 0A5A : 44 5C			    "D\"	[2]		jmp	L025C
 							;
-0A5C							unknown_104:
+0A5C							jtA_5C:
 0A5C : F1			    " "		[1]		mov	a,@r1
 0A5D : 13 E6			    "  "	[2]		addc	a,#0xE6
-0A5F : F6 76			    " v"	[2]		jc	L0A76
+0A5F : F6 76			    " v"	[2]		jc	jtA_76
 0A61 : EF 6E			    " n"	[2]		djnz	r7,L0A6E
 0A63 : 44 7B			    "D{"	[2]		jmp	sub_writeGPIB_2E_period
 							;
 0A65							unknown_105:
 0A65 : F1			    " "		[1]		mov	a,@r1
 0A66 : 13 FE			    "  "	[2]		addc	a,#0xFE
-0A68 : F6 76			    " v"	[2]		jc	L0A76
+0A68 : F6 76			    " v"	[2]		jc	jtA_76
 0A6A : EF 6E			    " n"	[2]		djnz	r7,L0A6E
 0A6C : 44 7B			    "D{"	[2]		jmp	sub_writeGPIB_2E_period
 							;
 0A6E							L0A6E:
 0A6E : 19			    " "		[1]		inc	r1
 0A6F : F1			    " "		[1]		mov	a,@r1
-0A70 : 96 76			    " v"	[2]		jnz	L0A76
+0A70 : 96 76			    " v"	[2]		jnz	jtA_76
 0A72 : EF 6E			    " n"	[2]		djnz	r7,L0A6E
 0A74 : 44 7B			    "D{"	[2]		jmp	sub_writeGPIB_2E_period
 							;
-0A76							L0A76:
+0A76							jtA_76:
 0A76 : E5			    " "		[1]		sel	mb0
 0A77 : BB 02			    "  "	[2]		mov	r3,#0x02
 0A79 : 44 94			    "D "	[2]		jmp	L0294
 							;
-0A7B							L0A7B:
+0A7B							jtA_7B:
 0A7B : E5			    " "		[1]		sel	mb0
 0A7C : B8 32			    " 2"	[2]		mov	r0,#0x32
 0A7E : 83			    " "		[2]		ret
@@ -2086,20 +2097,19 @@
 0A86 : 03 89			    "  "	[2]		add	a,#0x89
 0A88 : B3			    " "		[2]		jmpp	@a						;INFO: indirect jump
 							;
-0A89							unknown_107:
-0A89 : 30			    "0"		[1]		xchd	a,@r0
-0A8A : 26 2C			    "&,"	[2]		jnt0	L0A2C
-							;
+0A89							localJumpTableA32:
+0A89 : 30			    "0"				db	0x30
+0A8A : 26			    "&"				db	0x26
+0A8B : 2C			    ","				db	0x2C
 0A8C : 22			    """				db	0x22
-							;
-0A8D							unknown_108:
-0A8D : 3E			    ">"		[2]		movd	p6,a
-0A8E : 7B			    "{"		[1]		addc	a,r3
-0A8F : 7B			    "{"		[1]		addc	a,r3
+0A8D : 3E			    ">"				db	0x3E
+0A8E : 7B			    "{"				db	0x7B
+0A8F : 7B			    "{"				db	0x7B
 							;
 							;
 								org	0x0B00
-0B00							unknown_62:
+							;
+0B00							unknown_0B00:
 0B00 : BA 03			    "  "	[2]		mov	r2,#0x03
 0B02 : 97			    " "		[1]		clr	c
 0B03 : 18			    " "		[1]		inc	r0
@@ -2820,13 +2830,9 @@ Value		Type	Name
 019C		Code	jt_019C
 019D		Code	unknown_8
 01A0		Code	jt_01A0
-01A4		Code	unknown_9
 01A4		Code	jt_01A4
-01A8		Code	unknown_10
 01A8		Code	jt_01A8
-01AC		Code	unknown_11
 01AC		Code	jt_01AC
-01B0		Code	unknown_12
 01B0		Code	jt_01B0
 01B2		Code	L01B2
 01B4		Code	jt_01B4
@@ -2835,13 +2841,11 @@ Value		Type	Name
 01BE		Code	jt_01BE
 01C2		Code	jt_01C2
 01C8		Code	jt_01C8
-01CE		Code	unknown_16
 01CE		Code	jt_01CE
-01D6		Code	unknown_17
 01D6		Code	jt_01D6
 01DD		Code	L01DD
 01EA		Code	L01EA
-0200		Code	sub_0200
+0200		Code	sub_write_result_to_GPIB
 0211		Code	L0211
 021A		Code	L021A
 0228		Code	L0228
@@ -2849,7 +2853,8 @@ Value		Type	Name
 0236		Code	L0236
 023A		Code	L023A
 023E		Code	L023E
-0242		Code	s0200_end
+0242		Code	sWriteResult_end
+0243		Code	sWriteResult_write_a_Byte
 0243		Code	j0243
 0248		Code	j0243_loop
 024B		Code	L024B
@@ -3005,7 +3010,6 @@ Value		Type	Name
 06B9		Code	L06B9
 06C1		Code	L06C1
 06CA		Code	L06CA
-06CC		Code	L06CC
 06D2		Code	L06D2
 06D6		Code	L06D6
 06DC		Code	L06DC
@@ -3030,7 +3034,7 @@ Value		Type	Name
 076D		Code	L076D
 0773		Code	L0773
 0778		Code	sWriteMode_doWrite
-077F		Code	sWriteMode_end
+077F		Code	sWriteMode_writeLoop
 0787		Data	gpib_command_CPO
 078B		Data	gpib_command_OPZ
 078F		Data	gpib_command_SHZ
@@ -3059,8 +3063,8 @@ Value		Type	Name
 07E7		Data	gpib_command_OPN
 07EA		Code	L07EA
 07EB		Data	gpib_command_WAI
-07EF		Code	L07EF
-07FF		Code	unknown_32
+07EF		Code	sWriteMode_status7
+0800		Code	unknown_32
 080B		Code	L080B
 0811		Code	L0811
 0824		Code	unknown_33
@@ -3081,48 +3085,52 @@ Value		Type	Name
 089F		Code	unknown_41
 08A3		Code	L08A3
 08AB		Code	L08AB
-08B9		Code	L08B9
-0900		Code	unknown_52
+0900		Code	sub_0900
+0907		Data	localJumpTable9
 0909		Code	unknown_109
 090D		Code	unknown_110
-091A		Code	unknown_111
-091F		Code	unknown_53
+0910		Code	jt9_10
+091A		Code	jt9_1A
 0938		Code	L0938
-0953		Code	unknown_54
+0953		Code	jt9_53
 0972		Code	L0972
 0988		Code	unknown_55
-0997		Code	unknown_56
-09A2		Code	unknown_57
-09AA		Code	unknown_58
+0997		Code	jt9_97
+09A2		Code	jt9_A2
+09AA		Code	jt9_AA
 09B9		Code	L09B9
-09C1		Code	unknown_59
-09CC		Code	unknown_60
-09D4		Code	unknown_61
+09C1		Code	jt9_C1
+09CC		Code	jt9_CC
+09D4		Code	jt9_D4
 09E4		Code	L09E4
 09F0		Code	L09F0
-0A00		Code	unknown_93
+0A00		Code	sub_0a00
 0A0A		Code	unknown_94
+0A0A		Data	localJumpTableA
 0A0F		Code	unknown_95
-0A1B		Code	unknown_96
-0A26		Code	unknown_97
-0A2C		Code	L0A2C
-0A30		Code	L0A30
+0A13		Code	L0A13
+0A17		Code	L0A17
+0A1B		Data	localJumpTableA2
+0A22		Code	jtA_22
+0A26		Code	jtA_26
+0A2C		Code	jtA_2C
+0A30		Code	jtA_30
 0A36		Code	unknown_98
 0A38		Code	unknown_99
-0A3E		Code	unknown_100
-0A48		Code	unknown_101
-0A4C		Code	unknown_102
-0A50		Code	L0A50
-0A56		Code	unknown_103
-0A5C		Code	unknown_104
+0A3E		Code	jtA_3E
+0A48		Code	jtA_48
+0A4C		Code	jtA_4C
+0A50		Code	jtA_50
+0A56		Code	jtA_56
+0A5C		Code	jtA_5C
 0A65		Code	unknown_105
 0A6E		Code	L0A6E
-0A76		Code	L0A76
-0A7B		Code	L0A7B
+0A76		Code	jtA_76
+0A7B		Code	jtA_7B
 0A7F		Code	unknown_106
-0A89		Code	unknown_107
+0A89		Data	localJumpTableA32
 0A8D		Code	unknown_108
-0B00		Code	unknown_62
+0B00		Code	unknown_0B00
 0B07		Code	L0B07
 0B12		Code	L0B12
 0B15		Code	unknown_63
@@ -3207,6 +3215,6 @@ Value		Type	Name
 0FEC		Code	L0FEC
 0FF9		Code	L0FF9
 
-Number of symbols:			444
+Number of symbols:			442
 
 ;--------------------------------------------------------------
