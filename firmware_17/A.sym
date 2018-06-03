@@ -7,18 +7,18 @@ numformat C
 ; Port 1:
 ; P10 -> EPROM A12
 ; P11 -> EPROM A13
-; P12 -> Leakage supply on/off
-; P13 -> Input from IC27A comparator (Or pull-down???) Something to do with capacitance range switching?
-; P14 -> Gate of TR40; pulls down IC27B comparator (-) input
+; P12 -> Leakage supply on/off (10k pull-up, connector P4.2); to active load ctrl + PWM
+; P13 -> Input from IC27A comparator (Or pull-down???) Window comparator & ringer pulse generator
+; P14 -> Gate of TR40; pulls down IC27B window comparator (-) input
 ; P15 -> Controls discharge relay? Leakage something? (or maybe feedback to see if the relay failed?)
 ; P16 -> Also something to do with the discharge stuff
 ; P17 -> L4 discharge relay?
 
-; P20 -> I/O expander + ROM A8
-; P21 -> I/O expander + ROM A9
-; P22 -> I/O expander + ROM A10
-; P23 -> I/O expander + ROM A11
-; P24 -> Auto-off pin (connector P6)
+; P20 -> I/O expander + EPROM A8
+; P21 -> I/O expander + EPROM A9
+; P22 -> I/O expander + EPROM A10
+; P23 -> I/O expander + EPROM A11
+; P24 -> Auto-off control (connector P6.1 to leakage board)
 ; P25 -> Output of IC27A (capacitance comparator circuit)
 ; P26 -> Output of IC27B (capacitance comparator circuit)
 ; P27 -> active high failure warning

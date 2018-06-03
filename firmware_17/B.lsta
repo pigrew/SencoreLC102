@@ -10,7 +10,7 @@
 							;	Checksum:	E344
 							;	CRC-32:		3C9710B4
 							;
-							;	Date:		Sat Jun 02 23:31:36 2018
+							;	Date:		Sun Jun 03 14:44:13 2018
 							;
 							;	CPU:		Intel 8048 (MCS-48 family)
 							;
@@ -38,9 +38,9 @@
 000F : 27			    "'"		[1]		clr	a
 0010							L0010:
 0010 : B9 F7			    "  "	[2]		mov	r1,#0xF7
-0012 : 91			    " "		[2]		movx	@r1,a				; [0xF7] = 0
+0012 : 91			    " "		[2]		movx	@r1,a				; [0xF7] = A (set to zero in interrupt)
 0013 : B9 FB			    "  "	[2]		mov	r1,#0xFB
-0015 : 91			    " "		[2]		movx	@r1,a				; [0xFB] = 0
+0015 : 91			    " "		[2]		movx	@r1,a				; [0xFB] = A (set to zero in interrupt)
 0016 : B8 7F			    "  "	[2]		mov	r0,#0x7F			; r0=0x7F
 0018 : 27			    "'"		[1]		clr	a
 0019							L0019:
@@ -242,7 +242,7 @@
 0118 : 00			    " "		[1]		nop
 0119							sub_ctx_in_B_0119:
 0119 : 00			    " "		[1]		nop
-011A : 94 A9			    "  "	[2]		call	L04A9
+011A : 94 A9			    "  "	[2]		call	sub_GPIB_entry
 011C : 89 02			    "  "	[2]		orl	p1,#0x02
 011E : 00			    " "		[1]		nop
 011F : 00			    " "		[1]		nop
@@ -671,26 +671,26 @@
 																	; //             JMP sub_ctx_page_D_010C
 																	; //
 																	; Clear F0
-0301 : 0C			    " "		[2]		movd	a,p4				; Read (and discard) p4,p5,p6
+0301 : 0C			    " "		[2]		movd	a,p4				; // Set p4,p5,p6 to input, p7 to output 0xFF
 0302 : 0D			    " "		[2]		movd	a,p5
 0303 : 0E			    " "		[2]		movd	a,p6
 0304 : 23 FF			    "# "	[2]		mov	a,#0xFF
-0306 : 3F			    "?"		[2]		movd	p7,a				; Write 0xFF to p7
+0306 : 3F			    "?"		[2]		movd	p7,a
 0307 : BA FF			    "  "	[2]		mov	r2,#0xFF			; r2 = 0xFF (timeout counter)
 0309 : B8 7F			    "  "	[2]		mov	r0,#0x7F			; r0 = 0x7F
 030B : 23 FE			    "# "	[2]		mov	a,#0xFE
-030D : 3F			    "?"		[2]		movd	p7,a				; Write 0xFE to p7
+030D : 3F			    "?"		[2]		movd	p7,a				; set p7.0 low
 030E							j300_timeout_loop:
-030E : 0E			    " "		[2]		movd	a,p6				; Read p6, and complement
+030E : 0E			    " "		[2]		movd	a,p6				; // Wait for p6.0 to become low
 030F : 37			    "7"		[1]		cpl	a
-0310 : 12 24			    " $"	[2]		jb0	j300_contitnue		; If p6.0 was 0, then branch
+0310 : 12 24			    " $"	[2]		jb0	j300_continue		; If p6.0 was 0, then branch
 0312 : EA 0E			    "  "	[2]		djnz	r2,j300_timeout_loop	; decrement r2, fail if it is zero
 0314 : 23 FF			    "# "	[2]		mov	a,#0xFF
 0316 : 3F			    "?"		[2]		movd	p7,a				; Write 0xFF to p7
 0317 : B8 40			    " @"	[2]		mov	r0,#0x40
 0319 : F0			    " "		[1]		mov	a,@r0					; A = [0x40]
-031A : F2 20			    "  "	[2]		jb7	L0320				; jmp if A.7 is 1
-031C : C6 22			    " ""	[2]		jz	L0322				; jmp if A=0
+031A : F2 20			    "  "	[2]		jb7	L0320				; jmp if [0x40].7 is set => set [0x40]=0
+031C : C6 22			    " ""	[2]		jz	L0322				; jmp if [0x40] is zero
 031E : 24 74			    "$t"	[2]		jmp	jmp_0174_callback_table	; default jmp
 							;
 0320							L0320:
@@ -698,7 +698,7 @@
 0322							L0322:
 0322 : 24 0A			    "$ "	[2]		jmp	L010A
 							;
-0324							j300_contitnue:
+0324							j300_continue:
 0324 : 74 69			    "ti"	[2]		call	sub_0369
 0326 : 53 7F			    "S "	[2]		anl	a,#0x7F
 0328 : AF			    " "		[1]		mov	r7,a
@@ -724,7 +724,7 @@
 0347 : 03 D1			    "  "	[2]		add	a,#0xD1
 0349							L0349:
 0349 : F6 4D			    " M"	[2]		jc	L034D
-034B : 64 24			    "d$"	[2]		jmp	j300_contitnue
+034B : 64 24			    "d$"	[2]		jmp	j300_continue
 							;
 034D							L034D:
 034D : FF			    " "		[1]		mov	a,r7
@@ -750,7 +750,7 @@
 0360 : D3 0A			    "  "	[2]		xrl	a,#0x0A
 0362 : C6 67			    " g"	[2]		jz	L0367
 0364 : C8			    " "		[1]		dec	r0
-0365 : 64 24			    "d$"	[2]		jmp	j300_contitnue
+0365 : 64 24			    "d$"	[2]		jmp	j300_continue
 0367							L0367:
 0367 : 84 00			    "  "	[2]		jmp	L0400
 							;
@@ -1009,15 +1009,18 @@
 04A6 : EE A2			    "  "	[2]		djnz	r6,L04A2
 04A8 : 83			    " "		[2]		ret
 							;
-04A9							L04A9:
-04A9 : B8 40			    " @"	[2]		mov	r0,#0x40			; a = [0x40]
+04A9							sub_GPIB_entry:
+04A9 : B8 40			    " @"	[2]		mov	r0,#0x40			; // GPIB_entry(A = 0..12)
+																	; // Called when entering from other code segments
+																	; //
+																	; a = [0x40]
 04AB : F0			    " "		[1]		mov	a,@r0
 04AC : 53 1F			    "S "	[2]		anl	a,#0x1F			; a = a & 0x1F // Seems like a bug? Limit should be 12?
 04AE : 03 DC			    "  "	[2]		add	a,#0xDC			; a = a + 0xDC // 0xDC to 0xFB
 04B0 : B3			    " "		[2]		jmpp	@a						;INFO: indirect jump
 							;
 04B1							jt2_04B1:
-04B1 : B8 21			    " !"	[2]		mov	r0,#0x21
+04B1 : B8 21			    " !"	[2]		mov	r0,#0x21			; // if ([0x21] != 0)
 04B3 : F0			    " "		[1]		mov	a,@r0
 04B4 : 96 D9			    "  "	[2]		jnz	jt2_04D9
 04B6 : C8			    " "		[1]		dec	r0
@@ -1051,17 +1054,17 @@
 04DB : 83			    " "		[2]		ret
 							;
 04DC							localJumpTable2:
-04DC : D9			    " "				db	0xD9
-04DD : D9			    " "				db	0xD9
-04DE : D9			    " "				db	0xD9
-04DF : D9			    " "				db	0xD9
+04DC : D9			    " "				db	0xD9					; 0000 sub_write_result_to_GPIB()
+04DD : D9			    " "				db	0xD9					; 0001 sub_write_result_to_GPIB()
+04DE : D9			    " "				db	0xD9					; 0010 sub_write_result_to_GPIB()
+04DF : D9			    " "				db	0xD9					; 0011 sub_write_result_to_GPIB()
 04E0 : B1			    " "				db	0xB1
 04E1 : B1			    " "				db	0xB1
-04E2 : D9			    " "				db	0xD9
+04E2 : D9			    " "				db	0xD9					; 0110 sub_write_result_to_GPIB()
 04E3 : B1			    " "				db	0xB1
 04E4 : B1			    " "				db	0xB1
-04E5 : D9			    " "				db	0xD9
-04E6 : D9			    " "				db	0xD9
+04E5 : D9			    " "				db	0xD9					; 1001 sub_write_result_to_GPIB()
+04E6 : D9			    " "				db	0xD9					; 1010 sub_write_result_to_GPIB()
 04E7 : B1			    " "				db	0xB1
 04E8							localJumpTable2_badData:
 04E8 : 3C			    "<"				db	0x3C
@@ -2325,10 +2328,33 @@
 0C83 : BA 03			    "  "	[2]		mov	r2,#0x03
 0C85 : 84 89			    "  "	[2]		jmp	L0489
 							;
-0C87 : BA 04 FA 68 A8 FA 69 A9	    "   h  i "			db	0xBA, 0x04, 0xFA, 0x68, 0xA8, 0xFA, 0x69, 0xA9
-0C8F : C8 C9 F0 A1 EA 8F 83 BD	    "        "			db	0xC8, 0xC9, 0xF0, 0xA1, 0xEA, 0x8F, 0x83, 0xBD
-0C97 : 03 97 F0 71 A1 18 19 ED	    "   q    "			db	0x03, 0x97, 0xF0, 0x71, 0xA1, 0x18, 0x19, 0xED
-0C9F : 99 83			    "  "			db	0x99, 0x83
+0C87							unknown_111:
+0C87 : BA 04			    "  "	[2]		mov	r2,#0x04
+0C89 : FA			    " "		[1]		mov	a,r2
+0C8A : 68			    "h"		[1]		add	a,r0
+0C8B : A8			    " "		[1]		mov	r0,a
+0C8C : FA			    " "		[1]		mov	a,r2
+0C8D : 69			    "i"		[1]		add	a,r1
+0C8E : A9			    " "		[1]		mov	r1,a
+0C8F							L0C8F:
+0C8F : C8			    " "		[1]		dec	r0
+0C90 : C9			    " "		[1]		dec	r1
+0C91 : F0			    " "		[1]		mov	a,@r0
+0C92 : A1			    " "		[1]		mov	@r1,a
+0C93 : EA 8F			    "  "	[2]		djnz	r2,L0C8F
+0C95 : 83			    " "		[2]		ret
+							;
+0C96							unknown_112:
+0C96 : BD 03			    "  "	[2]		mov	r5,#0x03
+0C98 : 97			    " "		[1]		clr	c
+0C99							L0C99:
+0C99 : F0			    " "		[1]		mov	a,@r0
+0C9A : 71			    "q"		[1]		addc	a,@r1
+0C9B : A1			    " "		[1]		mov	@r1,a
+0C9C : 18			    " "		[1]		inc	r0
+0C9D : 19			    " "		[1]		inc	r1
+0C9E : ED 99			    "  "	[2]		djnz	r5,L0C99
+0CA0 : 83			    " "		[2]		ret
 							;
 							;
 								org	0x0D00
@@ -2879,7 +2905,7 @@ Value		Type	Name
 0315		Code	L0315
 0320		Code	L0320
 0322		Code	L0322
-0324		Code	j300_contitnue
+0324		Code	j300_continue
 033C		Code	L033C
 0349		Code	L0349
 034D		Code	L034D
@@ -2932,7 +2958,7 @@ Value		Type	Name
 04A0		Code	sub_04A0
 04A2		Code	L04A2
 04A4		Code	L04A4
-04A9		Code	L04A9
+04A9		Code	sub_GPIB_entry
 04B1		Code	jt2_04B1
 04C3		Code	L04C3
 04D3		Code	L04D3
@@ -3160,6 +3186,10 @@ Value		Type	Name
 0C78		Code	unknown_83
 0C7E		Code	L0C7E
 0C83		Code	unknown_84
+0C87		Code	unknown_111
+0C8F		Code	L0C8F
+0C96		Code	unknown_112
+0C99		Code	L0C99
 0D00		Code	unknown_85
 0D20		Code	L0D20
 0D22		Code	L0D22
@@ -3215,6 +3245,6 @@ Value		Type	Name
 0FEC		Code	L0FEC
 0FF9		Code	L0FF9
 
-Number of symbols:			442
+Number of symbols:			446
 
 ;--------------------------------------------------------------

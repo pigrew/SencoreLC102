@@ -1,5 +1,5 @@
-0012 [0xF7] = 0
-0015 [0xFB] = 0
+0012 [0xF7] = A (set to zero in interrupt)
+0015 [0xFB] = A (set to zero in interrupt)
 0016 r0=0x7F
 0040 [0xDF] = 0x1B
 0047 [0xDF] = 0x18
@@ -119,18 +119,17 @@
 0300 //             JMP sub_ctx_page_D_010C
 0300 //  
 0300 Clear F0
-0301 Read (and discard) p4,p5,p6
-0306 Write 0xFF to p7
+0301 // Set p4,p5,p6 to input, p7 to output 0xFF
 0307 r2 = 0xFF (timeout counter)
 0309 r0 = 0x7F
-030D Write 0xFE to p7
-030E Read p6, and complement
+030D set p7.0 low
+030E // Wait for p6.0 to become low
 0310 If p6.0 was 0, then branch
 0312 decrement r2, fail if it is zero
 0316 Write 0xFF to p7
 0319 A = [0x40]
-031A jmp if A.7 is 1
-031C jmp if A=0
+031A jmp if [0x40].7 is set => set [0x40]=0
+031C jmp if [0x40] is zero
 031E default jmp
 
 0369 r2=0xFF (loop counter)
@@ -148,9 +147,20 @@
 038c set p7.1 high
 038d // return read data in A.
 
+04a9 // GPIB_entry(A = 0..12)
+04a9 // Called when entering from other code segments
+04a9 // 
 04a9  a = [0x40]
 04ac a = a & 0x1F // Seems like a bug? Limit should be 12?
 04ae a = a + 0xDC // 0xDC to 0xFB
+04b1 // if ([0x21] != 0)
+04dc 0000 sub_write_result_to_GPIB()
+04dd 0001 sub_write_result_to_GPIB()
+04de 0010 sub_write_result_to_GPIB()
+04df 0011 sub_write_result_to_GPIB()
+04e2 0110 sub_write_result_to_GPIB()
+04e5 1001 sub_write_result_to_GPIB()
+04e6 1010 sub_write_result_to_GPIB()
 
 0500 a = r4
 0501 a = a ^ 0x09  (0000.1001)

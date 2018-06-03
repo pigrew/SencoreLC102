@@ -12,16 +12,16 @@ numformat C
 ; Expander mapping:
 ; MCU   IB
 ; p4   <-> D3..D0
-; p5   <-> D7..D0
+; p5   <-> D7..D4
 
-; p6.0 <-- Active low single from IB?
+; p6.0 <-- Active low single from IB? (030E)
 ; p6.2 <-- (used on line 0203
 ; p6.3 <-- InterruptRequest; op complete?
 
 ; p7.0 --> 
 ; p7.1 -->
 ; p7.2 -->
-; p7.3 --> \write_en
+; p7.3 --> \write_en ?o
 ; 
 ; Other pins?
 ; RS2..RS0 Register select
@@ -201,6 +201,8 @@ code 0x0a7f unknown_106
 code 0x0a8d unknown_108
 code 0x0909 unknown_109
 code 0x090d unknown_110
+code 0x0c87 unknown_111
+code 0x0c96 unknown_112
 
 
 code 0x0174 jmp_0174_callback_table
@@ -264,7 +266,7 @@ code 0x02D8  sub_02D8
 
 code 0x0300 jmp_0300_IB_stuff
 code 0x030E j300_timeout_loop
-code 0x0324 j300_contitnue
+code 0x0324 j300_continue
 
 code 0x0357  sub_0357
 
@@ -277,6 +279,7 @@ code 0x03BB  sub_03BB
 code 0x0490  sub_0490
 code 0x0497  sub_0497
 code 0x04A0  sub_04A0
+code 0x04A9  sub_GPIB_entry
 
 code 0x0500  sub_0500
 code 0x0546 jmp_0546_WriteIB_Format2String
@@ -329,4 +332,5 @@ code 0x0a13
 code 0x0a17
 
 code 0x0B00 unknown_0B00
+
 
