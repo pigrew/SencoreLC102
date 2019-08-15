@@ -31,6 +31,7 @@ I've figured out so far:
 | p7         | Outputs from the 8039      |
 | p7.3       | W̅R̅I̅T̅E̅                 |
 | p7.0       | R̅E̅S̅E̅T̅ (???)           |
+
 For GPIB, there should be a set of three register select pins, I'm guessing they are p7.\[210\].
 But, there also needs to be a read_enable (or read) pin.
 I don't know how it would be mapped. Addresses also need to be input to the controller
