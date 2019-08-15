@@ -16,10 +16,10 @@ been working on the "B" part, which handles GPIB.
 If browsing the code, you should look at comments in the *.sym files, in adition to 
 the *.lsta (annotated source listing) files.
 
-## GPIB
+## GPIB/RS232
 
-Stored in firmware part B is the GPIB controller logic. It uses an TMP82C43P to
-expand its I/O ports and access a GPIB controller IC. Here is the pin mapping that
+Stored in firmware part B is the GPIB/RS232 controller logic. It uses an TMP82C43P to
+expand its I/O ports and access a GPIB controller IC or UART. Here is the pin mapping that
 I've figured out so far:
 
 | Pin        | Function |
@@ -30,10 +30,17 @@ I've figured out so far:
 | p6.3       | I̅R̅Q̅(operation complete) |
 | p7         | Outputs from the 8039      |
 | p7.3       | W̅R̅I̅T̅E̅                 |
-
-There needs to be a set of three register select pins, I'm guessing they are p7.\[210\].
+| p7.0       | R̅E̅S̅E̅T̅ (???)           |
+For GPIB, there should be a set of three register select pins, I'm guessing they are p7.\[210\].
 But, there also needs to be a read_enable (or read) pin.
 I don't know how it would be mapped. Addresses also need to be input to the controller
 from the switches in the interface box. Perhaps there is some sort of mux in the box
 that I've not decoded yet.
 
+For RS232:
+
+Reset is:
+1. WRITE P7 0xF
+2. WRITE P7 0xF
+3. WRITE P7 0xF
+4. WRITE P7 0xF
