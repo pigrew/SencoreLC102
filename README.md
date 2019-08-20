@@ -29,7 +29,7 @@ I've figured out so far:
 | p4.\[3210\]  | D3 .. D0 |
 | p5.\[3210\]  | D7 .. D4 |
 |------------|----------|
-| p6         | Inputs to the 8039         |
+| p6         | Inputs to the 8039      |
 | p6.3       | Write ACK (active low) |
 | p6.2       | (??? Write mode entered?) |
 | p6.1       | (Normally low, is this a reset thing?) |
@@ -42,9 +42,13 @@ I've figured out so far:
 | p7.0       | Enter LC102 read phase (active low) |
 
 
+To initialize:
+1. Set p4,p5,p6,p7 to be read ports
+2. p7 = 1110 (enter read phase)
+
 To enter write mode:
 1. p7 = 1111
-2. Wait until p6=1001 (???)
+2. Abort if p6.2 is high
 
 To write:
 
