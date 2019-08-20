@@ -22,26 +22,48 @@ Stored in firmware part B is the GPIB/RS232 controller logic. It uses an TMP82C4
 expand its I/O ports and access a GPIB controller IC or UART. Here is the pin mapping that
 I've figured out so far:
 
+(From the point of view of LC102. Write goes to IB, Read comes from IB)
+
 | Pin        | Function |
 |------------|----------|
 | p4.\[3210\]  | D3 .. D0 |
 | p5.\[3210\]  | D7 .. D4 |
+|------------|----------|
 | p6         | Inputs to the 8039         |
-| p6.3       | I̅R̅Q̅(operation complete) |
+| p6.3       | Write ACK (active low) |
+| p6.2       | (??? Write mode entered?) |
+| p6.1       | (Normally low, is this a reset thing?) |
+| p6.0       | READ data Available (active low), data already on P4/P5 bus. |
+|------------|----------|
 | p7         | Outputs from the 8039      |
-| p7.3       | W̅R̅I̅T̅E̅                 |
-| p7.0       | R̅E̅S̅E̅T̅ (???)           |
+| p7.3       |                |
+| p7.2       |  W̅R̅I̅T̅E̅  |
+| p7.1       | Read complete (active low) |
+| p7.0       | Enter LC102 read phase (active low) |
 
-For GPIB, there should be a set of three register select pins, I'm guessing they are p7.\[210\].
-But, there also needs to be a read_enable (or read) pin.
-I don't know how it would be mapped. Addresses also need to be input to the controller
-from the switches in the interface box. Perhaps there is some sort of mux in the box
-that I've not decoded yet.
 
-For RS232:
+To enter write mode:
+1. p7 = 1111
+2. Wait until p6=1001 (???)
 
-Reset is:
-1. WRITE P7 0xF
-2. WRITE P7 0xF
-3. WRITE P7 0xF
-4. WRITE P7 0xF
+To write:
+
+1. Put data on P4/P5 bus
+2. Assert p7.2 low
+3. Wait until p6.3 goes low (ACK)
+4. Reset p7.2 high
+
+To enter read phase:
+1. Set p4/p5/p6 to inputs
+2. P7 = 1111
+3. p7 = 1110 (Sets read mode)
+
+To perform read:
+1. Wait until p6.1 goes low
+2. Read data
+3. Ack data by asserting p7.1 low
+4. Wait until p6.1 goes high
+5. Reset p7.1 high
+
+
+
