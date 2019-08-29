@@ -10,7 +10,7 @@ module uart_tx(
 );
 
 // bit divider
-reg [3:0] div = '0;
+reg [4:0] div = '0;
 
 always @(posedge clk) begin
 	div <= div + 1;

@@ -34,6 +34,8 @@ hdla_gen_hierarchy.html
 *impl*/*.twr
 *impl*/*_synplify_tmp*.lpf
 *impl*/*_*.asd
+*impl*/*.dir/*_*.asd
+*impl*/*.dir/*_*.ncd
 *impl*/*_*.rpt.db
 *impl*/*.ncd
 *impl*/*.ngd

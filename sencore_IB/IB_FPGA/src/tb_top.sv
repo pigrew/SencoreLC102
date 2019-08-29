@@ -7,7 +7,7 @@ localparam t_prog_min = 700;
 localparam data_setup_min = 200;
 localparam data_hold_min = 20;
 
-localparam uart_bittime=8680;
+localparam uart_bittime=8000;
 
 enum bit [1:0] {READ=2'b00, WRITE=2'b01, OP_OR=2'b10, OP_AND=2'b11} busOp;
 reg clk=1'b0;
