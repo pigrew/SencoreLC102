@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-module tb_top();
+module tb_top;
 
 // OKI minimums; nanoseconds
 localparam cmd_setup_min = 50, cmd_hold_min=60;
@@ -19,20 +19,19 @@ end
 wire [3:0] p2o;
 reg prog_n = 1'b1;
 
-wire p2_oe;
-
 wire tx, rts;
 reg rx=1'b1, cts=1'b1;
 
+wire LED;
 
 reg [3:0] p2_mcu = 'z;
+wire [3:0] p2_fpga;
 wire [3:0] p2;
 
-assign p2 = (p2_oe & ~prog_n) ? p2o : 'z;
 assign p2 = p2_mcu;
 
 top TOP(
-	.p2i(p2), .*
+	.p2(p2), .*
 );
 task readport(input bit [1:0] addr, output bit [3:0] result);
 	p2_mcu = {READ,addr};

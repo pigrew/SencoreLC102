@@ -10,6 +10,8 @@ synlog
 message.xml
 synlog.tcl
 syntmp
+.recovery
+.spreadsheet_view.ini
 
 #impl output files
 *.mrp
@@ -20,5 +22,27 @@ syntmp
 *.par
 hdla_gen_hierarchy.html
 *.areasrr
-*_twr.html
-*_summary.html
+*impl*/*_twr.html
+*impl*/*_summary.html
+*impl*/*impl*/*_scck.rpt
+*impl*/*_par.html
+*impl*/*_pad.html
+*impl*/*_mrp.html
+*impl*/*_iotiming.html
+*impl*/*.srf
+*impl*/*.srr
+*impl*/*.twr
+*impl*/*_synplify_tmp*.lpf
+*impl*/*_*.asd
+*impl*/*_*.rpt.db
+*impl*/*.ncd
+*impl*/*.ngd
+*impl*/*.ngo
+*impl*/*_impl*.htm
+*impl*/*.rpt
+*impl*/*_map.hrr
+reportview.xml
+*impl*/*.edi
+*impl*/backup
+*impl*/.build_status
+

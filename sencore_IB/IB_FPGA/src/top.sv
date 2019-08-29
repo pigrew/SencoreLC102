@@ -1,21 +1,22 @@
 module top(
 	input wire clk, // 7.3728 MHz
-
-	input wire [3:0] p2i,
-	output wire [3:0] p2o,
+	inout wire [3:0] p2,
 	input wire prog_n,
-	output wire p2_oe,
 	
 	output wire tx, rts,
-	input wire rx, cts
+	input wire rx, cts,
+	
+	output wire LED
 );
 
-// use SN74LV541A as buffer driver?
+wire [3:0] p2o;
+wire p2_oe;
+assign p2 = (p2_oe & ~prog_n) ? p2o : 'z;
 
 wire [7:0] tx_data;
 wire tx_data_available;
 wire tx_data_ack_n;
-
+assign LED = ~tx | ~rx | ~cts | ~rts;
 //
 wire [7:0] rx_data;
 /*
@@ -35,7 +36,7 @@ wire rx_data_available;
 ioexp XPDR (.clk,
 
 	// IB pins
-	.p2i, .p2o, .prog_n, .p2_oe,
+	.p2i(p2), .p2o, .prog_n, .p2_oe,
 	
 	// data UART->IB->Meter
 	.tx_data, // p4/p5
