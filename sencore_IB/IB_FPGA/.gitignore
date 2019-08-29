@@ -1,0 +1,24 @@
+*_tcl.html
+*_tcr.dir
+*.log
+*.log.bak.*
+msim/work
+synwork
+synlog
+*.wlf
+*.bak
+message.xml
+synlog.tcl
+syntmp
+
+#impl output files
+*.mrp
+*.ior
+*.pad
+*_synplify.html
+*_synplify.tcl
+*.par
+hdla_gen_hierarchy.html
+*.areasrr
+*_twr.html
+*_summary.html
