@@ -21,7 +21,9 @@ assign p2_buf_oe = 1'b0;
 wire [7:0] tx_data;
 wire tx_data_available;
 wire tx_data_ack_n;
-assign LED = ~tx | ~rx | ~cts | ~rts;
+wire led_inv;
+ledLatch LED_LATCH(.clk, .d(~tx | ~rx | ~cts | ~rts), .q(led_inv));
+assign LED = ~led_inv;
 //
 wire [7:0] rx_data;
 /*
