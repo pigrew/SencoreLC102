@@ -25,7 +25,7 @@ reg [4:0] bitCount = 5'd0;reg [4:0] bitCount_next;
 
 reg [7:0] data_next;
 
-always @(posedge clk) begin
+always_ff @(posedge clk) begin
 	state <= state_next;
 	rts <= rts_next;
 	clkCount <= clkCount_next;

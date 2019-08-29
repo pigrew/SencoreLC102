@@ -3,6 +3,8 @@ module top(
 	inout wire [3:0] p2,
 	input wire prog_n,
 	
+	output wire p2_buf_oe, // goes to the bus driver; always should be low, someone always wants stuff
+	
 	output wire tx, rts,
 	input wire rx, cts,
 	
@@ -12,6 +14,8 @@ module top(
 wire [3:0] p2o;
 wire p2_oe;
 assign p2 = (p2_oe & ~prog_n) ? p2o : 'z;
+assign p2_buf_oe = 1'b0;
+
 
 wire [7:0] tx_data;
 wire tx_data_available;

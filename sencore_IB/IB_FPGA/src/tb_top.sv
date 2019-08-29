@@ -13,7 +13,7 @@ enum bit [1:0] {READ=2'b00, WRITE=2'b01, OP_OR=2'b10, OP_AND=2'b11} busOp;
 reg clk=1'b0;
 
 always begin
-	#136ns clk = ~clk;
+	#125ns clk = ~clk; // 8 MHz
 end
 
 wire [3:0] p2o;
@@ -23,6 +23,7 @@ wire tx, rts;
 reg rx=1'b1, cts=1'b1;
 
 wire LED;
+wire p2_buf_oe;
 
 reg [3:0] p2_mcu = 'z;
 wire [3:0] p2_fpga;
