@@ -1,7 +1,7 @@
 vlog -lint ../src/*.sv
 vsim tb_top
 
-add wave tb_top/clk tb_top/p2
+add wave tb_top/clk tb_top/p2_bus tb_top/p2_mcu tb_top/p2_fpga
 add wave tb_top/TOP/*
 add wave tb_top/TOP/XPDR/p6
 add wave tb_top/TOP/XPDR/p7

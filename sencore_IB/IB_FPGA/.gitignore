@@ -12,6 +12,7 @@ synlog.tcl
 syntmp
 .recovery
 .spreadsheet_view.ini
+.floorplanner.ini
 
 #impl output files
 *.mrp

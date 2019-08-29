@@ -24,16 +24,23 @@ reg rx=1'b1, cts=1'b1;
 
 wire LED;
 wire p2_buf_oe;
+wire p2_buf_dir;
 
-reg [3:0] p2_mcu = 'z;
 wire [3:0] p2_fpga;
-wire [3:0] p2;
+wire [3:0] p2_bus; // bus, on the MCU side
 
-assign p2 = p2_mcu;
+reg [3:0] p2_mcu = 'z; // MCU driver
+assign p2_bus = p2_mcu;
+
+tb_levTrans LVTRANS (.oe(p2_buf_oe), .dir(p2_buf_dir), .a(p2_fpga), .b(p2_bus));
+
+pullup PU_B[3:0] (p2_bus);
+pullup PU_F[3:0] (p2_fpga);
 
 top TOP(
-	.p2(p2), .*
+	.p2(p2_fpga), .*
 );
+
 task readport(input bit [1:0] addr, output bit [3:0] result);
 	p2_mcu = {READ,addr};
 	#(cmd_setup_min*(1ns));
@@ -41,7 +48,7 @@ task readport(input bit [1:0] addr, output bit [3:0] result);
 	#(cmd_hold_min*(1ns));
 	p2_mcu = 'z;
 	#(t_prog_min*(1ns));
-	result = p2;
+	result = p2_bus;
 	prog_n = 1'b1;
 	#1us; // extra unneeded delay???
 endtask
