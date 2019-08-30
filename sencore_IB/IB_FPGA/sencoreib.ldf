@@ -3,22 +3,28 @@
     <Options/>
     <Implementation title="impl1" dir="impl1" description="impl1" synthesis="synplify" default_strategy="Strategy1">
         <Options top="top"/>
-        <Source name="top.sv" type="Verilog" type_short="Verilog">
+        <Source name="src/ioexp.sv" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="ioexp.sv" type="Verilog" type_short="Verilog">
+        <Source name="src/ledLatch.sv" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="tb_top.sv" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+        <Source name="src/sync2.sv" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
-        <Source name="uart_tx.sv" type="Verilog" type_short="Verilog">
+        <Source name="src/tb_levTrans.sv" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
-        <Source name="uart_rx.sv" type="Verilog" type_short="Verilog">
+        <Source name="src/tb_top.sv" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
-        <Source name="sync2.sv" type="Verilog" type_short="Verilog">
+        <Source name="src/top.sv" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="src/uart_rx.sv" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="src/uart_tx.sv" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="sencoreib.lpf" type="Logic Preference" type_short="LPF">

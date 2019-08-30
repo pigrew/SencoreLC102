@@ -1,6 +1,7 @@
 module ioexp(
 	input wire clk, // 8 MHz
-
+	input wire nrst,
+	
 	// IB pins
 	input wire [3:0] p2i,
 	output reg [3:0] p2o,

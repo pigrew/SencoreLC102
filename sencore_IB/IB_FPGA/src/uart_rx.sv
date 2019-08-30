@@ -1,6 +1,6 @@
 module uart_rx(
 	input clk,
-	
+	input nrst,
 	input wire rx,
 	output reg rts,
 	
@@ -12,26 +12,35 @@ localparam period = 31;
 
 typedef enum logic[2:0] {INIT, INIT2, IDLE, START, DATA,STOP, WAIT} state_t;
 
-state_t state = INIT, state_next;
+state_t state, state_next;
 
 reg rts_next;
 
-reg data_valid_r = 1'b0, data_valid_next;
+reg data_valid_r, data_valid_next;
 assign data_valid = data_valid_r;
 
-reg [4:0] clkCount = 5'd0, clkCount_next;
+reg [4:0] clkCount, clkCount_next;
 
-reg [4:0] bitCount = 5'd0;reg [4:0] bitCount_next;
+reg [4:0] bitCount;reg [4:0] bitCount_next;
 
 reg [7:0] data_next;
 
-always_ff @(posedge clk) begin
-	state <= state_next;
-	rts <= rts_next;
-	clkCount <= clkCount_next;
-	bitCount <= bitCount_next;
-	data <= data_next;
-	data_valid_r <= data_valid_next;
+always_ff @(posedge clk or negedge nrst) begin
+	if(~nrst) begin
+		state <= INIT;
+		rts <= 1'b0;
+		clkCount <= 5'd0;
+		bitCount <= 5'd0;
+		data <= 'x;
+		data_valid_r <= 1'b0;
+	end else begin
+		state <= state_next;
+		rts <= rts_next;
+		clkCount <= clkCount_next;
+		bitCount <= bitCount_next;
+		data <= data_next;
+		data_valid_r <= data_valid_next;
+	end
 end
 
 always_comb begin

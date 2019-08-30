@@ -26,8 +26,11 @@ wire LED;
 wire p2_buf_oe;
 wire p2_buf_dir;
 
-wire gnd2;
-pullup PU_GND2 (gnd2);
+reg gnd2 = 1'b1;
+
+initial begin
+	#3us gnd2 <= 1'b0;
+end
 
 wire [3:0] p2_fpga;
 wire [3:0] p2_bus; // bus, on the MCU side

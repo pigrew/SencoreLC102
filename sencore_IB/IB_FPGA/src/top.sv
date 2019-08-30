@@ -14,9 +14,14 @@ module top(
 	output wire LED
 );
 
+wire nrst;
+//GSR GSR_INST (nrst);
+
+sync2#(.RESET_VALUE(1'b0)) RST_SYNC(.clk, .nrst(~gnd2), .d(1'b1), .q(nrst));
+
 wire [3:0] p2o;
 wire p2_oe;
-assign p2_buf_dir = p2_oe & ~prog_n;
+assign p2_buf_dir = p2_oe & ~prog_n & nrst;
 assign p2 = (p2_buf_dir) ? p2o : 'z;
 assign p2_buf_oe = 1'b0;
 
@@ -24,7 +29,7 @@ wire [7:0] tx_data;
 wire tx_data_available;
 wire tx_data_ack_n;
 wire led_inv;
-ledLatch LED_LATCH(.clk, .d(~tx | ~rx | ~cts | ~rts), .q(led_inv));
+ledLatch LED_LATCH(.clk, .nrst, .d(~tx | ~rx | ~cts | ~rts), .q(led_inv));
 assign LED = ~led_inv;
 //
 wire [7:0] rx_data;
@@ -58,11 +63,11 @@ ioexp XPDR (.clk,
 
 
 wire cts_sync, rx_data_available_sync;
-sync2 SYNC_CTS(.clk, .d(cts), .q(cts_sync));
-sync2 SYNC_RX_DATA_AV (.clk, .d(rx_data_available), .q(rx_data_available_sync));
+sync2 SYNC_CTS(.clk, .nrst, .d(cts), .q(cts_sync));
+sync2 SYNC_RX_DATA_AV (.clk, .nrst, .d(rx_data_available), .q(rx_data_available_sync));
 
 uart_tx UART_TX(
-	.clk, .tx, .cts(cts_sync),
+	.clk, .nrst, .tx, .cts(cts_sync),
 	
 	.data(rx_data),
 	.data_valid(rx_data_available_sync),
@@ -71,10 +76,10 @@ uart_tx UART_TX(
 
 
 wire rx_sync;
-sync2 SYNC_RX (.clk, .d(rx), .q(rx_sync));
+sync2 SYNC_RX (.clk, .nrst, .d(rx), .q(rx_sync));
 
 uart_rx UART_RX (
-	.clk,
+	.clk, .nrst,
 	
 	.rx(rx_sync), .rts,
 	
