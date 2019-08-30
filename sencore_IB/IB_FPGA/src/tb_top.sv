@@ -26,6 +26,9 @@ wire LED;
 wire p2_buf_oe;
 wire p2_buf_dir;
 
+wire gnd2;
+pullup PU_GND2 (gnd2);
+
 wire [3:0] p2_fpga;
 wire [3:0] p2_bus; // bus, on the MCU side
 

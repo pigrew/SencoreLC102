@@ -6,6 +6,8 @@ module top(
 	output wire p2_buf_oe, // goes to the bus driver; always should be low, someone always wants stuff
 	output wire p2_buf_dir, // low is reading from bus, high is writing to the bus
 	
+	input wire gnd2,
+	
 	output wire tx, rts,
 	input wire rx, cts,
 	
