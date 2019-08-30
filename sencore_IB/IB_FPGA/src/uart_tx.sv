@@ -8,12 +8,14 @@ module uart_tx(
 	
 	output wire tx_ack
 );
+localparam DIV_WIDTH = 5;
+localparam TX_BIT_COUNT_WIDTH = 4;
 
 // bit divider
-reg [4:0] div = '0;
+reg [DIV_WIDTH-1:0] div = '0;
 
 always @(posedge clk) begin
-	div <= div + 1;
+	div <= div + {{(DIV_WIDTH-1){1'b0}},1'b1};
 end
 wire bit_en = (div == 0);
 
@@ -21,7 +23,7 @@ wire bit_en = (div == 0);
 reg [8:0] data_sr = 9'h1ff;
 assign tx = data_sr[0];
 
-reg [3:0] tx_bit_count = '0;
+reg [TX_BIT_COUNT_WIDTH-1:0] tx_bit_count = '0;
 reg triggered = 1'b0;
 reg old_data_valid;
 
@@ -39,7 +41,7 @@ always @(posedge clk) begin
 	if(bit_en) begin
 		data_sr <= {1'b1,data_sr[8:1]};
 		if(tx_bit_count !=0)
-			tx_bit_count <= tx_bit_count - 1;
+			tx_bit_count <= tx_bit_count - {{(TX_BIT_COUNT_WIDTH-1){1'b0}},1'b1};
 		if(cts & data_valid & (tx_bit_count == 0) & triggered) begin // new byte
 			data_sr <= {data,1'b0};
 			tx_bit_count <= 12;

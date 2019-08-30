@@ -20,7 +20,6 @@ module ioexp(
 
 reg w_en_reg = 1'b0;
 
-reg [7:0] rx_data_reg = 8'hFF;
 reg [3:0] p7 = 4'hF;
 
 assign tx_data_ack_n = p7[1];
