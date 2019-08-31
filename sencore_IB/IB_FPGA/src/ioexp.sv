@@ -18,10 +18,13 @@ module ioexp(
 	input wire tx_ack, // ~p6.2
 	output wire rx_data_available// p7.2
 );
-// Command/addr is latched when n_prog is HIGH. It's OK if bad data is latched given
+// Command/addr is latched when n_prog is HIGH. It's generally OK if bad data is latched given
 // that no action is taken at the first rising edge of nPROG after reset is removed.
 // So, lets synchronize the (local) reset signal to nPROG (which serves as the clock).
 // Reset should be removed soon after the rising edge of nPROG.
+
+// The exception is w_en_reg, which does need to be reset so that we don't write at the wrong
+// time during a reset
 
 // However, this means that we need two dummy reads at startup in order to leave reset.
 
@@ -31,26 +34,33 @@ module ioexp(
 wire nrst_local;
 sync2 #(.RESET_VALUE(1'b0)) nPROG_RST_SYNC2 (.clk(prog_n), .nrst(nrst), .d(1'b1), .q(nrst_local));
 
-reg w_en_reg = 1'b0;
+reg w_en_reg;
 
 reg [3:0] p7;
 
 assign tx_data_ack_n = p7[1];
 assign rx_data_available = ~p7[2];
 
-reg [1:0] cmd = 2'b00;
-reg [1:0] addr = 2'b00;
+reg [1:0] cmd;
+reg [1:0] addr;
 
 assign p2_oe = w_en_reg & ~prog_n;
 
-// no need for a reset signal, as it'll reset/synchronize in the flip flop.
+// Reset is required to prevent spurious write_enables on the output port.
+// I had coded this as an "if (~nrst) {...} else if(prog_n) {...}" but synopsys complained it wasn't a latch.
 always_latch begin
-	if(prog_n) begin
-		cmd <= p2i[3:2];
-		addr <= p2i[1:0];
-		w_en_reg <= 1'b0;
-		if(p2i[3:2] == 2'b00)
-			w_en_reg <= 1'b1;
+	if(~nrst_local | prog_n) begin
+		if(~nrst_local) begin
+			w_en_reg <= 1'b0;
+			cmd <= 2'b01; // read
+			addr <= 2'b00;
+		end else begin
+			cmd <= p2i[3:2];
+			addr <= p2i[1:0];
+			w_en_reg <= 1'b0;
+			if(p2i[3:2] == 2'b00)
+				w_en_reg <= 1'b1;
+		end
 	end
 end
 
