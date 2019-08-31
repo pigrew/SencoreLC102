@@ -1,0 +1,136 @@
+cpu 8051
+org 0x0000
+numformat C
+
+; RAM 0x10 ???
+; RAM 0x21 gStatus
+; RAM 0x64 stack base
+
+;byte 0x7FEF P_EF ; peripheral
+;byte 0x7FF7 P_F7 ; peripheral
+;byte 0x7FF8 to 0x7FF ; UART
+
+skip 0x0DE2 0x721E
+
+;code 0x0d02 reset
+code 0x0000 inttab_start
+code 0x0003 inttab_exti0
+code 0x0006 isr_exti0_body
+
+code 0x002b jtab0_tgt0
+code 0x002d jtab0_tgt1
+code 0x002f jtab0_tgt2
+code 0x0072 jtab0_tgt3
+
+code 0x01b8 sub_PrintSencoreString
+
+code 0x0202 sub01b8_waitUntilUARTlineStatus_TX_HoldReg
+code 0x020c sub01b8_waitUntilUARTReady0
+code 0x0213 sub01b8_TxSencoreStringCharacter
+
+code 0x0296 sub0241_2_TX_CR
+code 0x02ad sub0241_2_TX_LF
+code 0x02b3 sub0241_3_wait2_RAM23.5
+code 0x02ba sub0241_3_wait2_waitUntilUARTlineStatus_TX_HoldReg
+code 0x02c4 sub0241_3_TX_LF
+
+code 0x02ce sub0241_loop_TX_BaudRateString
+
+code 0x06E0 main
+
+string 0x0d5b STR_SENCORE 21
+string 0x0d70 STR_CPO 5
+string 0x0d75 STR_BAUD 5
+string 0x0d7a STR_300 5
+string 0x0d7F STR_600 5
+string 0x0d84 STR_1200 5
+string 0x0d89 STR_2400 5
+string 0x0d8E STR_4800 5
+string 0x0d93 STR_9600 5
+string 0x0d98 STR_19200 5
+string 0x0d9D STR_STOP 5
+string 0x0dA2 STR_DATA 5
+string 0x0dA7 STR_PARITY 7
+
+code 0x0073 sub_0073
+code 0x0241 sub_0241
+
+code 0x0321 jtab1_tgt0_300str
+code 0x032e jtab1_tgt1_600str
+code 0x033b jtab1_tgt2_1200str
+code 0x0348 jtab1_tgt3_2400str
+code 0x0355 jtab1_tgt4_4800str
+code 0x0362 jtab1_tgt5_9600str
+code 0x036f jtab1_tgt6_19200str
+
+code 0x037a endBaudRateStrTx
+
+code 0x0415 uartTxBitsLetter_0_7
+code 0x041d uartTxBitsLetter_1_8
+
+code 0x04b3 uartTxStopLetter_0_1
+code 0x04bb uartTxStopLetter_1_2
+
+
+; jmp table targets
+code 0x0551 uartTxParityLetter_0_N ; none
+code 0x0559 uartTxParityLetter_1_O ; odd
+code 0x0561 uartTxParityLetter_2_E ; even
+
+code 0x0567 uartTxParity_done
+
+code 0x0596 sub_0596
+
+code 0x0608 sub_uartCfgBaud
+code 0x064e uartCfg_0_300
+code 0x065c uartCfg_1_600
+code 0x0664 uartCfg_2_1200
+code 0x066c uartCfg_3_2400
+code 0x0674 uartCfg_4_4800
+code 0x067c uartCfg_5_9600
+code 0x0684 uartCfg_6_19200
+code 0x068c uartCfg_7_38400
+
+code 0x0697 sub_0697
+
+
+code 0x0D0D jtab0_0
+code 0x0D10 jtab0_1
+code 0x0D13 jtab0_2
+code 0x0D16 jtab0_3
+
+code 0x0D19 jtab1_0
+code 0x0D1c jtab1_1
+code 0x0D1f jtab1_2
+code 0x0D22 jtab1_3
+code 0x0D25 jtab1_4
+code 0x0D28 jtab1_5
+code 0x0D2B jtab1_6
+
+
+code 0x0D2e jtab2_0
+code 0x0D31 jtab2_1
+
+code 0x0D34 jtab3_0
+code 0x0D37 jtab3_1
+
+code 0x0D3a jtab4_0
+code 0x0D3d jtab4_1
+code 0x0D40 jtab4_2
+
+; UART baud rate table
+code 0x0D43 jtab5_0
+code 0x0D46 jtab5_1
+code 0x0D49 jtab5_2
+code 0x0D4c jtab5_3
+code 0x0D4f jtab5_4
+code 0x0D52 jtab5_5
+code 0x0D55 jtab5_6
+code 0x0D58 jtab5_7
+
+code 0x0dae isr_exti0
+code 0x0dc9 sub_sleep
+code 0x0dd0 sleep_outerloop
+code 0x0dd3 sleep_innerloop
+code 0x0dd8 sleep_ret
+code 0x0dd9 reset

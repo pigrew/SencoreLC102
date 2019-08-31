@@ -1,0 +1,57 @@
+004c RAM_23.5
+005c RAM_22.4
+005e RAM_23.1
+0060 RAM_22.1
+0062 RAM_23.2
+0064 @(0x10)++
+006D @(0x10) = 0
+0073 sleep(0xFF)
+0078 @(0e) = 0
+007e A = @(0e)
+007f Jump if A>0x1d
+0084 a = @(0x24 + @(0e))
+008b @(2f) = a
+008e @(0e) = @(0e) + 1
+00a7 sleep(0xFF)
+01ba sleep(0x0A)
+01bf Init sencore string counter @(13) = 0
+01c3 C = ~(ram_23.3)
+01c8 @(12) = 0x14
+01cc @(14) = 0x00
+199 RAM_23.0
+020C RAM_23.5
+0218 A = @(13)
+021B Pointer to SENCORE string
+021F write UART_TX_D = A
+023C jmp if TX not complete
+02ca Init baud string index counter (0x2e)
+02EA Pointer to "BAUD" string
+0321 A = @(0e), perhaps len of baud rate str?
+
+
+03D3 Pointer to "DATA" string
+0567 C = RAM_23.5
+061D Disable UART Interrupts
+0647 Lookup and jump baud rate set function
+0654 Enable UART Received Data Interrupt
+065C 600 baud
+0664 1200 baud
+
+06e0 RAM_22.7
+06f2 RAM_22.6
+
+079e RAM_23.6
+
+0a2f RAM_22.7
+
+0b46 RAM_23.3
+
+0CD5 @(0x0e) = 0
+0CDB A = @(0x0e)
+0D43 Baud rates
+0DAE Push state onto stack and call actual ISR implementation
+0DC9 Sleep for A*(constant) cycles
+0DC9 return if A==0
+0DCB r0 = 2b, no reason except to set it nonzero?
+0DD9 SP = 0x0064 (init stack base)
+0DDc PSW = 0 (init PSW)
