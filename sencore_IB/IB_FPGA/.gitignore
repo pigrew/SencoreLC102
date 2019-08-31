@@ -13,8 +13,9 @@ syntmp
 .recovery
 .spreadsheet_view.ini
 .floorplanner.ini
+.run_manager.ini
 
-#impl output files
+
 *.mrp
 *.ior
 *.pad
@@ -23,6 +24,11 @@ syntmp
 *.par
 hdla_gen_hierarchy.html
 *.areasrr
+
+
+#impl output files
+impl1
+
 *impl*/*_twr.html
 *impl*/*_summary.html
 *impl*/*impl*/*_scck.rpt

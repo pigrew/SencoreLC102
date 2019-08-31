@@ -21,7 +21,7 @@ module ioexp(
 
 reg w_en_reg = 1'b0;
 
-reg [3:0] p7 = 4'hF;
+reg [3:0] p7;
 
 assign tx_data_ack_n = p7[1];
 assign rx_data_available = ~p7[2];
@@ -41,26 +41,32 @@ always_latch begin
 	end
 end
 
-always_ff @(posedge prog_n) begin
-	case(cmd)
-		2'b00: // read
-		begin
-			; // Do nothing
-		end
-		2'b01: // write
-		begin
-			case (addr)
-				2'b00: rx_data[3:0] <= p2i; // p4
-				2'b01: rx_data[7:4] <= p2i; // p5
-				2'b11: p7 <= p2i; // p7
-			endcase
-		end
-		2'b10: // OR
-			if(addr == 2'b11) p7 <= p7 | p2i;
-		2'b11: // AND
-			if(addr == 2'b11) p7 <= p7 & p2i;
-	endcase
+always_ff @(posedge prog_n or negedge nrst) begin
+	if(~nrst) begin
+		p7 <= 4'hF;
+		rx_data <= 'x;
+	end else begin
+		case(cmd)
+			2'b00: // read
+			begin
+				; // Do nothing
+			end
+			2'b01: // write
+			begin
+				case (addr)
+					2'b00: rx_data[3:0] <= p2i; // p4
+					2'b01: rx_data[7:4] <= p2i; // p5
+					2'b11: p7 <= p2i; // p7
+				endcase
+			end
+			2'b10: // OR
+				if(addr == 2'b11) p7 <= p7 | p2i;
+			2'b11: // AND
+				if(addr == 2'b11) p7 <= p7 & p2i;
+		endcase
+	end
 end
+
 wire [3:0] p6 = {~tx_ack, 1'b1, 1'b0, ~tx_data_available};
 
 always_comb begin

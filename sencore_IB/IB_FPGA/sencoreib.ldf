@@ -27,6 +27,12 @@
         <Source name="src/uart_tx.sv" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
+        <Source name="src/clkdiv.sv" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="sencoreib.fdc" type="Synplify Design Constraints File" type_short="SDC">
+            <Options/>
+        </Source>
         <Source name="sencoreib.lpf" type="Logic Preference" type_short="LPF">
             <Options/>
         </Source>

@@ -4,19 +4,18 @@ module sync2
 	input wire clk,
 	input wire nrst,
 	input wire d,
-	output wire q
+	output reg q
 );
 
-reg x, q_reg;
-assign q = q_reg;
+reg x;
 
 always_ff @(posedge clk, negedge nrst) begin
 	if(~nrst) begin
 		x <= RESET_VALUE;
-		q_reg <= RESET_VALUE;
+		q <= RESET_VALUE;
 	end else begin
 		x <= d;
-		q_reg <= x;
+		q <= x;
 	end
 end
 

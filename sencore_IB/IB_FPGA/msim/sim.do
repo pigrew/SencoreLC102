@@ -1,5 +1,5 @@
 vlog -lint ../src/*.sv
-vsim tb_top
+vsim -L machxo2_vlg -L PMI_work work.tb_top
 
 add wave tb_top/clk tb_top/p2_bus tb_top/p2_mcu tb_top/p2_fpga
 add wave tb_top/TOP/*

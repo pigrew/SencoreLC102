@@ -1,5 +1,6 @@
 module uart_tx(
 	input wire clk,
+	input wire clk5,
 	input wire nrst,
 	output reg tx,
 	input wire cts,
@@ -10,20 +11,10 @@ module uart_tx(
 	output wire tx_ack
 );
 
-localparam DIV_WIDTH = 5;
 localparam TX_BIT_COUNT_WIDTH = 4;
 
-// bit divider
-reg [DIV_WIDTH-1:0] div;
-
-always @(posedge clk or negedge nrst) begin
-	if(~nrst) begin
-		div <= '0;
-	end else begin
-		div <= div + {{(DIV_WIDTH-1){1'b0}},1'b1};
-	end
-end
-wire bit_en = (div == 0);
+wire bit_en;
+assign bit_en = clk5;
 
 // data shift register
 reg [8:0] data_sr;
@@ -36,7 +27,7 @@ reg old_data_valid;
 reg tx_ack_reg;
 assign tx_ack = tx_ack_reg;
 
-always_ff @(posedge clk) begin
+always_ff @(posedge clk or negedge nrst) begin
 	if (~nrst) begin
 		old_data_valid <= '0;
 		tx_bit_count <= '0;

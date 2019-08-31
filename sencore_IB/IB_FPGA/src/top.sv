@@ -17,7 +17,9 @@ module top(
 wire nrst;
 //GSR GSR_INST (nrst);
 
-sync2#(.RESET_VALUE(1'b0)) RST_SYNC(.clk, .nrst(~gnd2), .d(1'b1), .q(nrst));
+sync2 #(.RESET_VALUE(1'b0)) RST_SYNC(.clk, .nrst(~gnd2), .d(1'b1), .q(nrst));
+
+wire clk5, clk10;
 
 wire [3:0] p2o;
 wire p2_oe;
@@ -29,7 +31,7 @@ wire [7:0] tx_data;
 wire tx_data_available;
 wire tx_data_ack_n;
 wire led_inv;
-ledLatch LED_LATCH(.clk, .nrst, .d(~tx | ~rx | ~cts | ~rts), .q(led_inv));
+ledLatch LED_LATCH(.clk, .nrst, .clk10, .d(~tx | ~rx | ~cts | ~rts), .q(led_inv));
 assign LED = ~led_inv;
 //
 wire [7:0] rx_data;
@@ -47,7 +49,7 @@ end
 */
 wire tx_ack;
 wire rx_data_available;
-ioexp XPDR (.clk,
+ioexp XPDR (.clk, .nrst,
 
 	// IB pins
 	.p2i(p2), .p2o, .prog_n, .p2_oe,
@@ -67,13 +69,14 @@ sync2 SYNC_CTS(.clk, .nrst, .d(cts), .q(cts_sync));
 sync2 SYNC_RX_DATA_AV (.clk, .nrst, .d(rx_data_available), .q(rx_data_available_sync));
 
 uart_tx UART_TX(
-	.clk, .nrst, .tx, .cts(cts_sync),
+	.clk, .clk5, .nrst, .tx, .cts(cts_sync),
 	
 	.data(rx_data),
 	.data_valid(rx_data_available_sync),
 	.tx_ack
 );
 
+clkdiv CLKDIV (.*);
 
 wire rx_sync;
 sync2 SYNC_RX (.clk, .nrst, .d(rx), .q(rx_sync));
@@ -87,6 +90,5 @@ uart_rx UART_RX (
 	.data_valid(tx_data_available),
 	.data_ack_n(tx_data_ack_n)
 );
-
 
 endmodule
