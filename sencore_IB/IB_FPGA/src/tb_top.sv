@@ -29,7 +29,7 @@ wire p2_buf_dir;
 reg gnd2 = 1'b1;
 
 initial begin
-	#3us gnd2 <= 1'b0;
+	#3.1234us gnd2 <= 1'b0;
 end
 
 wire [3:0] p2_fpga;

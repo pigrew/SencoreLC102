@@ -31,8 +31,18 @@ module ioexp(
 // This module encodes the combined behavior of the Sencore IB and the expander, but just enough
 // that it works, but doesn't fully implement either independantly.
 
+// This module also delays the enable by about 375ns to avoid some bus contention.
+// The 8243 has an access time of <650ns, but the MCU only requires an access time of <700ns (@11MHz).
+// The nPROG pulse width may be as short as 700ns.
+
+// To do this, one can AND the we signal with a delayed nprog (passed through a 2 gate synchronizer,
+// which delays up to 4 (or so) clock cycles).
+
 wire nrst_local;
 sync2 #(.RESET_VALUE(1'b0)) nPROG_RST_SYNC2 (.clk(prog_n), .nrst(nrst), .d(1'b1), .q(nrst_local));
+
+wire p2_oe_guard_n;
+sync2 #(.RESET_VALUE(1'b1)) nPROG_DELAY_SYNC (.clk(clk), .nrst(~prog_n & nrst), .d(prog_n), .q(p2_oe_guard_n));
 
 reg w_en_reg;
 
@@ -44,7 +54,7 @@ assign rx_data_available = ~p7[2];
 reg [1:0] cmd;
 reg [1:0] addr;
 
-assign p2_oe = w_en_reg & ~prog_n;
+assign p2_oe = w_en_reg & ~prog_n & ~p2_oe_guard_n;
 
 // Reset is required to prevent spurious write_enables on the output port.
 // I had coded this as an "if (~nrst) {...} else if(prog_n) {...}" but synopsys complained it wasn't a latch.
