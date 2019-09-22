@@ -10,7 +10,7 @@
 							;	Checksum:	A789
 							;	CRC-32:		7C27F972
 							;
-							;	Date:		Sat Aug 31 13:39:39 2019
+							;	Date:		Sat Aug 31 16:16:27 2019
 							;
 							;	CPU:		Intel 8051 (MCS-51 family)
 							;
@@ -1282,7 +1282,7 @@
 06DE : F0			    " "		[2]		movx	@dptr,a
 06DF : 22			    """		[2]		ret
 							;
-06E0							main:
+06E0							sub_main:
 06E0 : D2 17			    "  "	[1]		setb	0x17			; RAM_22.7
 06E2 : 75 A8 00			    "u  "	[2]		mov	iec,#0x00
 06E5 : 90 7F F7			    "   "	[2]		mov	dptr,#0x7FF7
@@ -1901,16 +1901,16 @@
 0AD8 : 90 7F F8			    "   "	[2]		mov	dptr,#0x7FF8
 0ADB : F0			    " "		[2]		movx	@dptr,a
 0ADC							L0ADC:
-0ADC : 90 7F FA			    "   "	[2]		mov	dptr,#0x7FFA
+0ADC : 90 7F FA			    "   "	[2]		mov	dptr,#0x7FFA		; a = @(UART_INT_FLAGS)
 0ADF : E0			    " "		[2]		movx	a,@dptr
-0AE0 : B4 04 09			    "   "	[2]		cjne	a,#0x04,L0AEC
-0AE3 : 90 7F F8			    "   "	[2]		mov	dptr,#0x7FF8
+0AE0 : B4 04 09			    "   "	[2]		cjne	a,#0x04,no_uart_rx_data_available	; jump if no data available
+0AE3 : 90 7F F8			    "   "	[2]		mov	dptr,#0x7FF8		; @(0e) = @(UART_DATA)
 0AE6 : E0			    " "		[2]		movx	a,@dptr
 0AE7 : 78 0E			    "x "	[1]		mov	r0,#0x0E
 0AE9 : F6			    " "		[1]		mov	@r0,a
 0AEA : 80 F0			    "  "	[2]		sjmp	L0ADC
 							;
-0AEC							L0AEC:
+0AEC							no_uart_rx_data_available:
 0AEC : 74 07			    "t "	[1]		mov	a,#0x07
 0AEE : 45 21			    "E!"	[1]		orl	a,X0021
 0AF0 : F5 21			    " !"	[1]		mov	X0021,a
@@ -2094,25 +2094,25 @@
 0C0B : 80 F6			    "  "	[2]		sjmp	L0C03
 							;
 0C0D							L0C0D:
-0C0D : 74 13			    "t "	[1]		mov	a,#0x13
+0C0D : 74 13			    "t "	[1]		mov	a,#0x13			; UART_DATA = 0x13
 0C0F : 90 7F F8			    "   "	[2]		mov	dptr,#0x7FF8
 0C12 : F0			    " "		[2]		movx	@dptr,a
 0C13							L0C13:
-0C13 : 75 90 FF			    "u  "	[2]		mov	p1,#0xFF
-0C16 : 78 12			    "x "	[1]		mov	r0,#0x12
+0C13 : 75 90 FF			    "u  "	[2]		mov	p1,#0xFF			; set P1 to input
+0C16 : 78 12			    "x "	[1]		mov	r0,#0x12			; @(12) = 0
 0C18 : 76 00			    "v "	[1]		mov	@r0,#0x00
 0C1A							L0C1A:
-0C1A : 78 12			    "x "	[1]		mov	r0,#0x12
+0C1A : 78 12			    "x "	[1]		mov	r0,#0x12			; @( 0x42 + @(12)) = p1
 0C1C : E6			    " "		[1]		mov	a,@r0
 0C1D : 24 42			    "$B"	[1]		add	a,#0x42
 0C1F : F8			    " "		[1]		mov	r0,a
 0C20 : A6 90			    "  "	[2]		mov	@r0,p1
-0C22 : 78 12			    "x "	[1]		mov	r0,#0x12
+0C22 : 78 12			    "x "	[1]		mov	r0,#0x12			; a = @(0x42 + 12)
 0C24 : E6			    " "		[1]		mov	a,@r0
 0C25 : 24 42			    "$B"	[1]		add	a,#0x42
 0C27 : F8			    " "		[1]		mov	r0,a
 0C28 : E6			    " "		[1]		mov	a,@r0
-0C29 : B4 FE 0C			    "   "	[2]		cjne	a,#0xFE,L0C38
+0C29 : B4 FE 0C			    "   "	[2]		cjne	a,#0xFE,L0C38	; jump if A != 0xFE
 0C2C : 12 06 97			    "   "	[2]		lcall	sub_0697
 0C2F : 74 38			    "t8"	[1]		mov	a,#0x38
 0C31 : 45 B0			    "E "	[1]		orl	a,p3
@@ -2230,7 +2230,7 @@
 0CD7 : 76 00			    "v "	[1]		mov	@r0,#0x00
 0CD9							L0CD9:
 0CD9 : 78 0E			    "x "	[1]		mov	r0,#0x0E
-0CDB : E6			    " "		[1]		mov	a,@r0					; A = @(0x0e)
+0CDB : E6			    " "		[1]		mov	a,@r0					; A = @(0e)
 0CDC : D3			    " "		[1]		setb	c
 0CDD : 94 01			    "  "	[1]		subb	a,#0x01
 0CDF : 50 0D			    "P "	[2]		jnc	L0CEE
@@ -2246,7 +2246,7 @@
 0CF1 : 78 0E			    "x "	[1]		mov	r0,#0x0E
 0CF3 : 76 00			    "v "	[1]		mov	@r0,#0x00
 0CF5							L0CF5:
-0CF5 : 78 0E			    "x "	[1]		mov	r0,#0x0E
+0CF5 : 78 0E			    "x "	[1]		mov	r0,#0x0E			; a = @(0e)
 0CF7 : E6			    " "		[1]		mov	a,@r0
 0CF8 : D3			    " "		[1]		setb	c
 0CF9 : 94 01			    "  "	[1]		subb	a,#0x01
@@ -2362,7 +2362,7 @@
 0DD9							reset:
 0DD9 : 75 81 64			    "u d"	[2]		mov	sp,#0x64			; SP = 0x0064 (init stack base)
 0DDC : 75 D0 00			    "u  "	[2]		mov	psw,#0x00			; PSW = 0 (init PSW)
-0DDF : 02 06 E0			    "   "	[2]		ljmp	main
+0DDF : 02 06 E0			    "   "	[2]		ljmp	sub_main
 
 ;--------------------------------------------------------------
 Symbol table
@@ -2558,7 +2558,7 @@ Value		Type	Name
 06CA		Code	L06CA
 06CE		Code	L06CE
 06D8		Code	L06D8
-06E0		Code	main
+06E0		Code	sub_main
 06F2		Code	L06F2
 06F4		Code	L06F4
 0727		Code	L0727
@@ -2626,7 +2626,7 @@ Value		Type	Name
 0ACC		Code	L0ACC
 0AD6		Code	L0AD6
 0ADC		Code	L0ADC
-0AEC		Code	L0AEC
+0AEC		Code	no_uart_rx_data_available
 0B0C		Code	L0B0C
 0B12		Code	L0B12
 0B31		Code	L0B31

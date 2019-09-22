@@ -36,7 +36,7 @@ code 0x02c4 sub0241_3_TX_LF
 
 code 0x02ce sub0241_loop_TX_BaudRateString
 
-code 0x06E0 main
+code 0x06E0 sub_main
 
 string 0x0d5b STR_SENCORE 21
 string 0x0d70 STR_CPO 5
@@ -92,6 +92,11 @@ code 0x0684 uartCfg_6_19200
 code 0x068c uartCfg_7_38400
 
 code 0x0697 sub_0697
+
+code 0x0aec no_uart_rx_data_available
+
+
+;code 0x0C0D main_read_UART_data
 
 
 code 0x0D0D jtab0_0
