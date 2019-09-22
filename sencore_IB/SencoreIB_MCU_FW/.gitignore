@@ -1,0 +1,5 @@
+/Debug/
+/.settings/language.settings.xml
+language.settings.xml
+*.elf.launch
+.log

@@ -1,0 +1,4 @@
+[submodule "tinyusb"]
+	path = sencore_IB/SencoreIB_MCU_FW/tinyusb
+	url = https://github.com/pigrew/tinyusb.git
+	branch = usbtmc
