@@ -23,6 +23,7 @@
 #include "usart.h"
 #include "usb.h"
 #include "gpio.h"
+#include "tusb.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -92,7 +93,8 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  __HAL_RCC_USB_CLK_ENABLE();
+  tusb_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
