@@ -27,7 +27,7 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -37,7 +37,9 @@
 void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void uart_tx_str_sync(const char *x);
+void uart_tx_sync(const void *x, size_t len);
+bool uart_rx_char(uint8_t *x);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

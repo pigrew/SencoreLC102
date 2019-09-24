@@ -23,11 +23,11 @@
 #include "usart.h"
 #include "usb.h"
 #include "gpio.h"
-#include "tusb.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "tusb.h"
+#include "usbtmc_app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +59,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void TU_BREAKPOINT() {
 
+}
 /* USER CODE END 0 */
 
 /**
@@ -94,6 +96,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   __HAL_RCC_USB_CLK_ENABLE();
+  uart_tx_str_sync("Hello\r\n");
   tusb_init();
   /* USER CODE END 2 */
 
@@ -101,6 +104,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  tud_task();
+	  usbtmc_app_task_iter();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
