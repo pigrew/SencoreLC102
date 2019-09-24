@@ -46,7 +46,7 @@ always_ff @(posedge clk or negedge nrst) begin
 			data_sr <= {1'b1,data_sr[8:1]};
 			if(tx_bit_count !=0)
 				tx_bit_count <= tx_bit_count - {{(TX_BIT_COUNT_WIDTH-1){1'b0}},1'b1};
-			if(cts & data_valid & (tx_bit_count == 0) & triggered) begin // new byte
+			if(~cts & data_valid & (tx_bit_count == 0) & triggered) begin // new byte
 				data_sr <= {data,1'b0};
 				tx_bit_count <= 12;
 				triggered <= 1'b0;

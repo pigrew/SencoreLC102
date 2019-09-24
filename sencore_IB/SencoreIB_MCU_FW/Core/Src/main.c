@@ -96,7 +96,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   __HAL_RCC_USB_CLK_ENABLE();
-  uart_tx_str_sync("Hello\r\n");
+  //uart_tx_str_sync("Hello\r\n");
   tusb_init();
   /* USER CODE END 2 */
 

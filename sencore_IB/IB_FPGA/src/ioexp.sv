@@ -101,7 +101,13 @@ always_ff @(posedge prog_n or negedge nrst_local) begin
 end
 
 wire [3:0] p6 = {~tx_ack, 1'b1, 1'b0, ~tx_data_available};
+// 0 0 => 4
+// 0 1 => 5
+// 1 0 => c
+// 1 1 => d
 
+// d is 1101
+// e is 1110
 always_comb begin
 	case(addr[1:0])
 		2'b00: // port 4

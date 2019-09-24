@@ -6,7 +6,7 @@ module ledLatch(
 	output reg q // q is active high, so will need to be inverted to drive the LED open-drain.
 );
 
-localparam TIMER_BITS = 5;
+localparam TIMER_BITS = 8;
 
 reg q_next;
 

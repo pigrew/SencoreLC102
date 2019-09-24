@@ -6,6 +6,8 @@ module clkdiv(
 );
 
 localparam DIV_WIDTH = 10;
+// CLK10 is 7.8125 kHz
+// CLK5 is faster. (250 kHz?)
 
 reg [DIV_WIDTH-1:0] t;
 assign clk5 = t[4:0] == '0;

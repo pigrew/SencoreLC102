@@ -14,20 +14,20 @@
 
 ###==== BEGIN Clocks - (Populated from tab in SCOPE, do not edit)
 create_clock  -name {clk} {p:clk} -period {125} -waveform {{64 125}}
-create_clock  -name {prog_n} {p:prog_n} -period {10000} -waveform {{700 10000}}
+create_clock  -name {prog} {p:prog} -period {10000} -waveform {{700 10000}}
 
 ###==== END Clocks
 
 
 
 ###==== BEGIN Inputs/Outputs - (Populated from tab in SCOPE, do not edit)
-set_input_delay  {p:p2[3:0]} -fall -min -clock {c:prog_n} {-50}
-set_input_delay  {p:p2[3:0]} -fall -max -clock {c:prog_n} {60}
+set_input_delay  {p:p2[3:0]} -fall -min -clock {c:prog} {-50}
+set_input_delay  {p:p2[3:0]} -fall -max -clock {c:prog} {60}
 ###==== END Inputs/Outputs
 
 
 
 ###==== BEGIN "Delay Paths" - (Populated from tab in SCOPE, do not edit)
-set_max_delay  -from {p:prog_n} -to {p:p2_buf_dir} {15}
+set_max_delay  -from {p:prog} -to {p:p2_buf_dir} {15}
 ###==== END "Delay Paths"
 

@@ -10,7 +10,7 @@ module uart_rx(
 );
 localparam period = 31;
 
-typedef enum logic[2:0] {INIT, INIT2, IDLE, START, DATA,STOP, WAIT} state_t;
+typedef enum logic[2:0] {INIT, IDLE, START, DATA,STOP, WAIT, WAIT2} state_t;
 
 state_t state, state_next;
 
@@ -29,8 +29,8 @@ always_ff @(posedge clk or negedge nrst) begin
 	if(~nrst) begin
 		state <= INIT;
 		rts <= 1'b0;
-		clkCount <= 5'd0;
-		bitCount <= 5'd0;
+		clkCount <= period;
+		bitCount <= 5'd8;
 		data <= 'x;
 		data_valid_r <= 1'b0;
 	end else begin
@@ -51,14 +51,10 @@ always_comb begin
 	data_next = data;
 	data_valid_next = 1'b0;
 	case(state)
-	INIT: begin
-		clkCount_next = period;
-		bitCount_next = 8;
-		state_next = INIT2;
-	end
-	INIT2: begin
+	INIT: begin // delay at start to wait for idle line
 		if(~rx) begin
-			state_next = INIT;
+			clkCount_next = period;
+			bitCount_next = 8;
 		end else begin
 			if(clkCount == 0) begin
 				bitCount_next = bitCount -1;
@@ -111,8 +107,14 @@ always_comb begin
 	end
 	WAIT: begin
 		data_valid_next = 1'b1;
-		if(~data_ack_n)
+		if(~data_ack_n) begin
+			state_next = WAIT2;
+		end
+	end
+	WAIT2: begin
+		if(data_ack_n) begin
 			state_next = IDLE;
+		end
 	end
 	endcase
 end
