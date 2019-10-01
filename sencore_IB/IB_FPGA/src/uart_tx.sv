@@ -1,3 +1,5 @@
+`default_nettype none
+
 module uart_tx(
 	input wire clk,
 	input wire clk5,

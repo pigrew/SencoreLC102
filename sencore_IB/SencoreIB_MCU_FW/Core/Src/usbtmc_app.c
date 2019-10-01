@@ -132,6 +132,9 @@ bool tud_usbtmc_msg_data_cb(void *data, size_t len, bool transfer_complete)
 	} else if(transfer_complete && (len >=4) && !strncasecmp("fetch?",data,6)) {
 		queryState = 2;
 		status |= IEEE4882_STB_MAV;
+	} else if(transfer_complete && (len >=4) && !strncasecmp("len?",data,4)) {
+		queryState = 3;
+		status |= IEEE4882_STB_MAV;
 	} else {
 		uart_tx_sync(buffer, buffer_len);
 	}
@@ -193,6 +196,10 @@ void usbtmc_app_task_iter(void) {
 				uartRxBuffer_ix = 0u;
 				bulkInStarted = 0u;
 			}
+			break;
+		case 3:
+			tud_usbtmc_transmit_dev_msg_data(&uartRxBuffer_ix,  sizeof(uartRxBuffer_ix),true,false);
+			bulkInStarted = 0u;
 			break;
 		}
 		// MAV is cleared in the transfer complete callback.

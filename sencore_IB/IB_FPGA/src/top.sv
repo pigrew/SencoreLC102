@@ -40,7 +40,7 @@ wire [7:0] tx_data;
 wire tx_data_available;
 wire tx_data_ack_n;
 wire led_inv;
-ledLatch LED_LATCH(.clk, .nrst, .clk10, .d(~tx | ~rx | ~cts | ~rts), .q(led_inv));
+ledLatch LED_LATCH(.clk, .nrst, .clk10, .d(prog/*~tx | ~rx*/ ), .q(led_inv));
 assign LED = ~led_inv;
 //
 wire [7:0] rx_data;
@@ -58,6 +58,8 @@ end
 */
 wire tx_ack;
 wire rx_data_available;
+wire talk, talk_ack;
+
 ioexp XPDR (.clk, .nrst,
 
 	// IB pins
@@ -67,6 +69,7 @@ ioexp XPDR (.clk, .nrst,
 	.tx_data, // p4/p5
 	.tx_data_available, // p6.0
 	.tx_data_ack_n,
+	.talk, .talk_ack,
 	
 	// data Meter->IB->UART
 	.rx_data, .rx_data_available, .tx_ack
@@ -97,7 +100,8 @@ uart_rx UART_RX (
 	
 	.data(tx_data),
 	.data_valid(tx_data_available),
-	.data_ack_n(tx_data_ack_n)
+	.data_ack_n(tx_data_ack_n),
+	.talk, .talk_ack
 );
 
 endmodule

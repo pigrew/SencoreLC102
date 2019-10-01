@@ -31,30 +31,33 @@ I've figured out so far:
 |------------|----------|
 | p6         | Inputs to the 8039      |
 | p6.3       | Write ACK (active low) |
-| p6.2       | (??? Write mode entered?) |
+| p6.2       | Talk request, (only sent in write mode (P7.0=1)?), clear |
 | p6.1       | (Normally low, is this a reset thing?) |
 | p6.0       | READ data Available (active low), data already on P4/P5 bus. |
 |------------|----------|
 | p7         | Outputs from the 8039      |
-| p7.3       |                |
-| p7.2       |  W̅R̅I̅T̅E̅  |
+| p7.3       |               |
+| p7.2       | W̅R̅I̅T̅E̅  |
 | p7.1       | Read complete (active low) |
 | p7.0       | Enter LC102 read phase (active low) |
 
+
+(Below is from the point of view of the meter, not the IB slave)
 
 To initialize:
 1. Set p4,p5,p6,p7 to be read ports
 2. p7 = 1110 (enter read phase)
 
-To enter write mode:
+To check if I should talk:
 1. p7 = 1111
-2. Abort if p6.2 is high
+2. Abort if p6.2 is high.
+3. Continue with write if p6.2 is low.
 
 To write:
 
 1. Put data on P4/P5 bus
 2. Assert p7.2 low
-3. Wait until p6.3 goes low (ACK)
+3. Wait until p6.3 goes low (ACK) (p6.2 should go back high at this point, too)
 4. Reset p7.2 high
 
 To enter read phase:
@@ -63,10 +66,10 @@ To enter read phase:
 3. p7 = 1110 (Sets read mode)
 
 To perform read:
-1. Wait until p6.1 goes low
+1. Wait until p6.0 goes low
 2. Read data
 3. Ack data by asserting p7.1 low
-4. Wait until p6.1 goes high
+4. Wait until p6.0 goes high
 5. Reset p7.1 high
 
 

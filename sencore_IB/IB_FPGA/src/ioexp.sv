@@ -1,3 +1,5 @@
+`default_nettype none
+
 module ioexp(
 	input wire clk, // 8 MHz
 	input wire nrst,
@@ -12,6 +14,9 @@ module ioexp(
 	input wire [7:0] tx_data, // p4/p5
 	input wire tx_data_available, // p6.0
 	output wire tx_data_ack_n,
+	
+	input wire talk,
+	output wire talk_ack,
 	
 	// data Meter->IB->UART
 	output reg [7:0] rx_data,
@@ -45,16 +50,20 @@ wire p2_oe_guard_n;
 sync2 #(.RESET_VALUE(1'b1)) nPROG_DELAY_SYNC (.clk(clk), .nrst(~prog_n & nrst), .d(prog_n), .q(p2_oe_guard_n));
 
 reg w_en_reg;
+wire write_mode;
 
 reg [3:0] p7;
 
 assign tx_data_ack_n = p7[1];
 assign rx_data_available = ~p7[2];
+assign write_mode = p7[0];
 
 reg [1:0] cmd;
 reg [1:0] addr;
 
 assign p2_oe = w_en_reg & ~prog_n & ~p2_oe_guard_n;
+
+assign talk_ack = ~p7[2];
 
 // Reset is required to prevent spurious write_enables on the output port.
 // I had coded this as an "if (~nrst) {...} else if(prog_n) {...}" but synopsys complained it wasn't a latch.
@@ -100,7 +109,7 @@ always_ff @(posedge prog_n or negedge nrst_local) begin
 	end
 end
 
-wire [3:0] p6 = {~tx_ack, 1'b1, 1'b0, ~tx_data_available};
+wire [3:0] p6 = {~tx_ack, ~(write_mode & talk), 1'b0, ~tx_data_available};
 // 0 0 => 4
 // 0 1 => 5
 // 1 0 => c

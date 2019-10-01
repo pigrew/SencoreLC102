@@ -1,3 +1,5 @@
+`default_nettype none
+
 module uart_rx(
 	input clk,
 	input nrst,
@@ -6,7 +8,10 @@ module uart_rx(
 	
 	output reg [7:0] data,
 	output wire data_valid,
-	input wire data_ack_n
+	input wire data_ack_n,
+	
+	output reg talk,
+	input wire talk_ack
 );
 localparam period = 31;
 
@@ -25,6 +30,8 @@ reg [4:0] bitCount;reg [4:0] bitCount_next;
 
 reg [7:0] data_next;
 
+reg talk_next;
+
 always_ff @(posedge clk or negedge nrst) begin
 	if(~nrst) begin
 		state <= INIT;
@@ -33,6 +40,7 @@ always_ff @(posedge clk or negedge nrst) begin
 		bitCount <= 5'd8;
 		data <= 'x;
 		data_valid_r <= 1'b0;
+		talk <= 1'b0;
 	end else begin
 		state <= state_next;
 		rts <= rts_next;
@@ -40,6 +48,7 @@ always_ff @(posedge clk or negedge nrst) begin
 		bitCount <= bitCount_next;
 		data <= data_next;
 		data_valid_r <= data_valid_next;
+		talk <= talk_next;
 	end
 end
 
@@ -50,6 +59,11 @@ always_comb begin
 	bitCount_next = bitCount;
 	data_next = data;
 	data_valid_next = 1'b0;
+	talk_next = talk;
+	
+	if(talk_ack)
+		talk_next = 0;
+		
 	case(state)
 	INIT: begin // delay at start to wait for idle line
 		if(~rx) begin
@@ -98,6 +112,9 @@ always_comb begin
 		if(clkCount == 0) begin
 			if(~rx) begin // wrong stop bit
 				state_next = INIT;
+			end else if (data == 8'hFE) begin
+				talk_next = 1'b1;
+				state_next = WAIT2;
 			end else begin
 				state_next = WAIT;
 				data_valid_next = 1'b1;
